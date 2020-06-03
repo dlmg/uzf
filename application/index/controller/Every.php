@@ -21,12 +21,28 @@ class Every extends Common
         $this->wechant_numb = Config::get('wechat_numb');
     }
 
-    public function test()
+    /**
+     * 通过经纬度计算两点距离
+     * @param $lat1
+     * @param $lng1
+     * @param $lat2
+     * @param $lng2
+     * @create_time: 2020/6/3 16:04:59
+     * @author: wcg
+     */
+    public function test($lat1,$lng1,$lat2,$lng2)
     {
-        /*$coin_id = input('coin_id')?:'1';
-        dump($coin_id);*/
-        echo '123';
-        echo '321';
+        $earthRadius = 6378.137;
+        $lat1 = ($lat1 * M_PI ) / 180;
+        $lng1 = ($lng1 * M_PI ) / 180;
+        $lat2 = ($lat2 * M_PI ) / 180;
+        $lng2 = ($lng2 * M_PI ) / 180;
+        $calcLongitude = $lng2 - $lng1;
+        $calcLatitude = $lat2 - $lat1;
+        $stepOne = pow(sin($calcLatitude / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($calcLongitude / 2), 2);
+        $stepTwo = 2 * asin(min(1, sqrt($stepOne)));
+        $calculatedDistance = $earthRadius * $stepTwo;
+        dump($calculatedDistance);
     }
 
     /**

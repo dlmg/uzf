@@ -2,11 +2,7 @@
 
 namespace app\index\controller;
 
-use app\admin\logic\UserLogic;
-use app\common\model\Apply;
 use app\common\validate\Verify;
-use hyperjiang\BankCard;
-use app\index\controller\Wecpay;
 use think\Db;
 
 class User extends Basis
@@ -29,16 +25,6 @@ class User extends Basis
         $param = input('post.');
         $us_id = $this->user['id'];
         $pic = base64_upload($param['us_head_pic']);
-        // if ($pic) {
-        // 	$param['us_head_pic'] = $pic;
-        // }else{
-        // 	$this->e_msg('图片上传失败');
-        // }
-        //$param['us_head_pic'] = base64_upload($param['us_head_pic']);
-        // if(!$param['us_head_pic']){
-        // 	unset($param['us_head_pic']);
-        // }
-        // unset($param['us_tel']);
         $rel = model('User')->where('id', $us_id)->update($param);
         if ($rel) {
             $this->s_msg(null, 1);
@@ -175,11 +161,6 @@ class User extends Basis
         if ($param['status'] == 1) {
             $re = model('Banks')->where('us_id', $param['us_id'])->where('status', 1)->setDec('status');
         }
-
-        //$default = model('Banks')->where('us_id',$this->user['id'])->where('status',1)->find();
-        // if(!$default){
-        // 	$param['status'] = 1;
-        // }
         $rel = model('Banks')->addInfo($param);
         if ($rel) {
             $this->s_msg('添加成功', $rel);
@@ -190,7 +171,6 @@ class User extends Basis
     {
         $map['id'] = input('post.id');
         $param['status'] = 1;
-
         $addr_m = model('Banks');
         $us_id = $addr_m->where($map)->value('us_id');
         $addr_m->where('us_id', $us_id)->where('status', 1)->setDec('status');
