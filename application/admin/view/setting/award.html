@@ -1,0 +1,183 @@
+{include file="public/_meta" /}
+
+<title>基本设置</title>
+<style type="text/css">
+	.award{
+		display: flex;
+		justify-content: flex-start;
+		flex-wrap: wrap;
+
+	}
+	.award .row{
+		width:20%;
+		display: block;
+	}
+	.award .row .form-label{
+		width: 50%;
+		padding: 0;
+		
+	}
+	/*.row label{
+		width: 20%;
+	}*/
+	.award .row .formControls{
+		width: 50%;
+		padding: 0;
+	}
+	.award .row .formControls>input{
+		width: 100% !important;
+	}
+</style>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页
+	<span class="c-gray en">&gt;</span>
+	系统管理
+	<span class="c-gray en">&gt;</span>
+	会员等级目标设置
+	<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" onclick="ooo()" title="清楚缓存" ><i class="Hui-iconfont">&#xe706;</i></a>&nbsp;&nbsp;&nbsp;&nbsp;
+</nav>
+<div class="page-container">
+	<form class="form form-horizontal" id="form-article-add">
+		<div id="tab-system" class="HuiTab">
+			<div class="tabCon ">
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">
+						<span class="c-red">*</span>
+						一级会员需要推荐商家的个数：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" name="num_b_v1"  value="{:cache('setting')['num_b_v1']}" class="input-text" style="width:10%">
+					</div>
+					<label class="form-label col-xs-4 col-sm-2">
+						<span class="c-red">*</span>
+						一级会员需要推荐会员的个数：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" name="num_c_v1"  value="{:cache('setting')['num_c_v1']}" class="input-text" style="width:10%">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">
+						<span class="c-red">*</span>
+						二级会员需要推荐商家的个数：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" name="num_b_v2"  value="{:cache('setting')['num_b_v2']}" class="input-text" style="width:10%">
+					</div>
+					<label class="form-label col-xs-4 col-sm-2">
+						<span class="c-red">*</span>
+						二级会员需要推荐会员的个数：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" name="num_c_v2"  value="{:cache('setting')['num_c_v2']}" class="input-text" style="width:10%">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">
+						<span class="c-red">*</span>
+						三级会员需要推荐商家的个数：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" name="num_b_v3"  value="{:cache('setting')['num_b_v3']}" class="input-text" style="width:10%">
+					</div>
+					<label class="form-label col-xs-4 col-sm-2">
+						<span class="c-red">*</span>
+						三级会员需要推荐会员的个数：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" name="num_c_v3"  value="{:cache('setting')['num_c_v3']}" class="input-text" style="width:10%">
+					</div>
+				</div>
+
+				
+		<div class="tabCon">
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">
+						<span class="c-red">*</span>
+						开户银行地址：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" name="bank_addr"  value="" class="input-text" style="width:20%">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">
+						<span class="c-red">*</span>
+						收款账户：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" name="bank_number"  value="" class="input-text" style="width:20%">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">
+						<span class="c-red">*</span>
+						公司名称：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" name="company"  value="" class="input-text" style="width:20%">
+					</div>
+				</div>
+		</div>
+		<div class="row cl">
+			<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+				<button onclick="return saveConfig();" class="btn btn-primary radius" type="submit"><i clsass="Hui-iconfont">&#xe632;</i> 保存</button>
+				<button class="btn btn-default radius rst" type="reset">&nbsp;&nbsp;重置&nbsp;&nbsp;</button>
+			</div>
+		</div>
+	</form>
+</div>
+{include file="public/_footer" /}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+$('.form input[name="status"][value='+"{:cache('setting')['status']}"+']').attr("checked",true);
+
+$(function(){
+	$('.skin-minimal input').iCheck({
+		checkboxClass: 'icheckbox-blue',
+		radioClass: 'iradio-blue',
+		increaseArea: '20%'
+	});
+	$("#tab-system").Huitab({
+		index:0
+	});
+});
+// /setting/saveinfo
+function saveConfig(){
+	$.post("{:url('setting/award')}",$('.form').serialize()).success(function(data){
+		layer.msg(data.msg);
+		if(!data.code){
+			$('.rst').click();
+		}
+	});
+	return false;
+}
+function ooo(){
+	$.post("{:url('every/clear')}").success(function(data){
+		layer.msg('清除成功');
+	});
+	return false;
+}
+$("#file_upload").change(function() {
+        //提交
+        var data = new FormData();
+        // console.log($(this)[0].files[0]);
+        data.append('img',$(this)[0].files[0]);
+        $.ajax({
+            url: '{:url("tupian")}',
+            type: 'POST',
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data) {
+            	if(data.code){
+            		$('#background').val(data.data);
+                	$('.preview').attr('src', data.data);
+            	}else{
+            		layer.msg(data.msg);
+            	}
+            	
+            },
+            error: function() {
+                layer.msg('上传出错');
+            }
+        });
+    });
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

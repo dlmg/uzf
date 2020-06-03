@@ -1,0 +1,122 @@
+{include file="public/_meta" /}
+<title></title>
+</head>
+<body>
+<nav class="breadcrumb">
+	<i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>区域管理 <span class="c-gray en">&gt;</span> 区域列表 
+	<a class="btn btn-success radius r" style="line-height:1.5em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
+</nav>
+<div class="page-container">
+	<!-- <div class="text-c">
+	<form class="Huiform" method="get" action="">
+		状态：
+		<span class="select-box inline">
+			<select name="us_status" class="select">
+				<option value="">全部</option> 
+				<option value="1">正常</option> 
+				<option value="0" style="color:red;">被禁用</option>
+			</select>
+		</span>
+		<input type="text" class="input-text" style="width:150px" placeholder="昵称、账号、手机号" id="" name="keywords" value="{$Request.get.keywords|default=''}">
+		<button type="submit" class="btn btn-success radius" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+		</form>
+	</div> -->
+	<div class="cl pd-5 bg-1 bk-gray mt-20">
+		<span class="l">
+			<a href="javascript:;" onclick="create(0,'add','添加区域运营商')" class="btn btn-primary radius">
+			<i class="Hui-iconfont">&#xe600;</i> 区域运营商</a>
+		</span> 
+		<span class="r">共有数据：<strong>{$list->total()}</strong> 条</span> </div>
+	<div class="mt-20">
+	<table class="table table-border  table-hover table-bg table-sort">
+		<thead>
+			<tr class="text-c">				
+				<th>区域名称</th>
+				<th>会员昵称</th>
+				<th>会员手机</th>
+				<th>区域描述</th>
+				<th>区域状态</th>
+				<th>添加时间</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			{volist name='list' id="vo"}
+				<tr class="text-c">
+					<td>{$vo.area_name}</td>
+					<td>{$vo.us_nickname}</td>
+					<td>{$vo.us_tel}</td>
+					<td>{$vo.area_description}</td>									
+					<td class="td-status">
+					{if condition="$vo.area_status eq 1"}
+						<span class="label label-success radius">已启用</span>
+					{else/}
+						<span class="label label-default radius">已禁用</span>
+					{/if}
+					</td>					
+					<td>{$vo.add_time}</td>								
+					<td class="td-manage">					
+						<!-- <a style="text-decoration:none" onclick="record({$vo.id},'edit','会员详情')"  title="会员详情"><i class="Hui-iconfont">&#xe6c6;</i></a> -->
+						{if condition="$vo.area_status eq 1"}
+						<a style="text-decoration:none" onClick="change({$vo.id},0,'area_status')" href="javascript:;" title="停用"><i class="Hui-iconfont">&#xe631;</i></a> 
+						{else/}
+						<a onClick="change({$vo.id},1,'area_status')" href="javascript:;" title="启用" style="text-decoration:none"><i class="Hui-iconfont">&#xe615;</i></a>
+						{/if}
+						<a title="编辑" href="javascript:;" onclick="create({$vo.id},'edit','修改信息')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a>
+						<a style="text-decoration:none" onclick="del({$vo.id},'AreaStore')" title="删除"><i class="Hui-iconfont">&#xe706;</i></a>
+					</td>
+				</tr>
+			{/volist}
+		</tbody>
+	</table>
+	<div class="pages" style="margin:20px;float: right; ">{$list|raw}</div>
+</div>
+{include file="public/_footer" /}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+$('select[name="us_status"]').val({$Request.get.us_status});
+
+function create(id,url,key){
+	var url = "{:url('"+url+"')}?id="+id;
+	creatIframe(url,key);
+}
+
+function change(id,value,key){
+	layer.confirm('确定要更改么？', {
+	      btn: ['确定', '取消']
+	    }, function(index, layero){
+	        $.ajax({
+	            type: "post",
+	            url: "{:url('change')}",
+	            data: {id:id,value:value,key:key},
+	            success: function(data) {
+	             	if(data.code){
+	             		location.href = '';
+	             	}
+	            }
+	        });
+	    });
+}
+
+function del(id,key){
+    layer.confirm('确定要删除么？', {
+      btn: ['确定', '取消']
+    }, function(index, layero){
+        $.ajax({
+            type: "post",
+            url: "{:url('deletearea')}",
+            data: {id:id,key:key},
+            success: function(data) {
+                layer.msg(data.msg);
+                if(data.code==1){
+                    setTimeout(function(){
+                        location.href = data.url;
+                    },1000);
+                }
+            }
+        });
+    });
+}	
+</script> 
+</body>
+</html>

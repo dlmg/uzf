@@ -1,0 +1,114 @@
+{include file="public/_meta" /}
+<title></title>
+</head>
+<style>
+  #code0 {
+      
+      text-align: center;
+  }
+  #code0 button{
+    margin-bottom: 10px;
+    outline: none;
+  }
+  #allCode{
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+
+  }
+  #allCode div{
+     text-align: center;
+     margin: 30px;
+     border: 1px solid red;
+     width:300px;
+  }
+  #allCode div img{ 
+    display: inline-block !important;
+    margin-bottom:10px;
+  }
+  #allCode >div:last-child{
+    display: none;
+  }
+</style>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>二维码管理 <span class="c-gray en">&gt;</span> 二维码列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div id="allCode">
+      <div id="code0">
+        <button onclick="downloadQrcode('0')">点我下载二维码</button>
+        <p id="codefirst"></p>
+      </div>
+    </div>
+    
+    <input type="hidden" name="" id="listvalue" value="{$list}">
+    <input type="hidden" name="" id="number" value="{$number}">
+{include file="public/_footer" /}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+var nodelist = $("#listvalue").val();
+var number = eval($("#number").val());
+function makeCode () {
+    $("#codefirst").text(number[0]);     
+    //var elText = document.getElementById("text");
+    var elText = eval(nodelist);
+    //alert(elText);   
+    if (!elText) {
+        alert("无法获取链接");
+        elText.focus();
+        return;
+    }
+    var idArr = [];
+    elText.forEach(function(val,index){
+      console.log("####",val);
+      if(index == 0){
+        var qrcode = new QRCode("code0",{width : 250,height : 250});
+        qrcode.makeCode(val);
+        console.log(qrcode._el,"---===")
+      }else{
+        console.log( "!!!!!",idArr[index-1]);
+        var qrcode = new QRCode( idArr[index-1],{width : 250,height : 250});
+        qrcode.makeCode(val);
+      }
+      idArr.push("code"+(index+1));
+      console.log( "!!!!!",idArr);
+      var htmlStr = '<div id="'+"code"+(index+1)+'"><button onclick="downloadQrcode('+(index+1)+')" style="margin-bottom:10px">点我下载二维码</button><p>'+number[index+1]+'</p></div>';
+      $("#allCode").append(htmlStr);
+      // var qrcode = new QRCode( idArr[index],{width : 150,height : 150});
+      // qrcode.makeCode(val);
+      // console.log( "!!!!!",index);
+      
+      // $("#allCode").innerHtml=htmlStr
+    });  
+    console.log(idArr);
+}
+
+makeCode();
+function downloadQrcode(val){
+  console.log(val,"-----")
+  var num;
+  if(val=="0"){
+    num=number[0];
+  }else{
+    num=number[val];
+  }
+  console.log(num,"/////")
+  var qrcode = document.getElementById("code"+val);
+  var img = qrcode.getElementsByTagName('img')[0];
+  var link = document.createElement("a");
+  var url = img.getAttribute("src");
+  link.setAttribute("href",url);
+  link.setAttribute("download",num);
+  link.click();
+}
+/*$("#text").
+on("blur", function () {
+    makeCode();
+}).
+on("keydown", function (e) {
+    if (e.keyCode == 13) {
+        makeCode();
+    }
+});*/ 
+</script> 
+</body>
+</html>

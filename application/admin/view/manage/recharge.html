@@ -1,0 +1,161 @@
+{include file="public/_meta" /}
+<title>充值管理</title>
+</head>
+
+<body>
+    <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页
+        <span class="c-gray en">&gt;</span> 个人中心
+        <span class="c-gray en">&gt;</span> 充值管理
+        <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a>
+    </nav>
+    <div class="page-container">
+        <form class="form form-horizontal" id="form-article-add">
+            <div id="tab-system" class="HuiTab">
+                <div class="tabBar cl">
+                    <span>充值</span>
+                    <span>充值记录</span>
+                </div>
+                <div class="tabCon">
+                    <div class="row cl">
+                        <label class="form-label col-xs-4 col-sm-2">
+                            <span class="c-red">*</span> 积分余额：
+                        </label>
+                        <div class="formControls col-xs-8 col-sm-9">
+                            <input type="text" value="{$admin['integral']}" class="input-text" style="width:10%">
+                        </div>
+                    </div>
+                    <div class="row cl">
+                        <label class="form-label col-xs-4 col-sm-2">
+                            <span class="c-red">*</span> 充值金额：
+                        </label>
+                        <div class="formControls col-xs-8 col-sm-9">
+                            <input type="text" name="jine" id="website-Keywords" placeholder="请输入金额" value="" class="input-text" style="width:20%">
+                        </div>
+                    </div>
+                    <div class="row cl">
+                        <label class="form-label col-xs-4 col-sm-2">
+                            <span class="c-red">*</span> 备注：
+                        </label>
+                        <div class="formControls col-xs-8 col-sm-9">
+                            <input type="text" name="note" id="website-description" placeholder="控制在40个汉字以内" value="" class="input-text" style="width:50%">
+                        </div>
+                    </div>
+                   <!--  <div class="row cl">
+                        <label class="form-label col-xs-4 col-sm-2">
+                            <span class="c-red">*</span> 扫描二二维码：
+                        </label>
+                        <div class="formControls col-xs-8 col-sm-9">
+                            <img src="/static/admin/img/erweima.png" alt="">
+                        </div>
+                    </div> -->
+                    <div class="row cl">
+                        <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+                            <button onclick="return chongzhi();" class="btn btn-primary radius" type="button"><i class="Hui-iconfont">&#xe632;</i>确定</button>
+                        </div>
+                        <div class="row cl">
+                            <label class="form-label col-xs-4 col-sm-2">
+                                <span class="c-red">*</span> 充值说明：
+                            </label>
+                            <div class="formControls col-xs-8 col-sm-9">
+                                开户行:{$config['bank_address']}
+                                <br /> 收款帐号：{$config['bank_number']}
+                                <br /> 公司名称：{$config['company']}
+                                <br /> 备注：打款或转账成功后请联系网站客服人员进行充值，如有疑问请拨打：{$config['phone']}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tabCon" style="display: block;">
+                    <div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="r">共有数据：<strong>{$list->total()}</strong> 条</span> </div>
+                    <table class="table table-border  table-hover table-bg table-sort">
+                        <thead>
+                            <tr class="text-c">
+                                <th>ID</th>
+                                <th>充值金额</th>
+                                <th>充值时间</th>
+                                <th>到账时间</th>
+                                <th>状态</th>
+                                <th>备注</th>
+                                {if condition="session('role_id') eq 1"}
+                                <th>充值人</th>
+								<th>操作</th>
+								{/if}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {volist name="list" id="vo"}
+                            <tr class="text-c">
+                                <td>{$vo.Id}</td>
+                                <td>{$vo.jine}</td>
+                                <td>{$vo.add_time}</td>
+                                <td>{$vo.deal_time}</td>
+                                <td>{$vo.status_text}</td>
+                                <td>{$vo.note}</td>
+                                {if condition="session('role_id') eq 1"}
+                                <td>{$vo.aid_text}</td>	
+								<td>
+									{if condition="$vo.status eq 0"}
+										<a onclick="check({$vo.Id},2,'不通过')"><i class="Hui-iconfont" title="审核不过">&#xe60b;</i</a> 
+										<a onclick="check({$vo.Id},1,'通过')"><i class="Hui-iconfont" title="审核通过">&#xe6a7;</i</a> 
+									{else}
+										----
+									{/if}
+								</td>
+								{/if}
+                            </tr>
+                            {/volist}
+                        </tbody>
+                    </table>
+                    <div class="pages" style="margin:20px;float: right; ">{$list->render()}</div>
+                </div>
+            </div>
+        </form>
+    </div>
+    {include file="public/_footer" /}
+    <!--请在下方写此页面业务相关的脚本-->
+    <script type="text/javascript">
+    $(function() {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        $("#tab-system").Huitab({
+            index: 0
+        });
+    });
+    // /setting/saveinfo
+    function chongzhi() {
+        $.post("{:url('manage/recharge')}", $('.form').serialize()).success(function(data) {
+            layer.msg(data.msg);
+            if(data.code){
+                setTimeout(function(){
+                    location.href=data.url;
+                },500);
+            }
+        });
+        return false;
+    }
+    function check(id,status,key){
+		layer.confirm('确认'+key+'吗？',function(index){
+			$.post("{:url('pass')}",{id:id,status:status}).success(function(data){
+				layer.msg(data.msg,{icon: 6,time:1000});
+				if(data.code){
+					setTimeout(function(){
+						location.href=data.url;
+					},500);
+				}
+			});
+		});
+	}
+    function ooo() {
+        $.post("{:url('cron/clear')}").success(function(data) {
+            layer.msg('清楚成功');
+        });
+        return false;
+    }
+    </script>
+    <!--/请在上方写此页面业务相关的脚本-->
+</body>
+
+</html>

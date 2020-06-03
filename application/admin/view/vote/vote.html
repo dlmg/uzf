@@ -1,0 +1,148 @@
+{include file="public/_meta" /}
+<link href="__STATIC__/admin/lib/webuploader/0.1.5/webuploader.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>投票管理 <span
+        class="c-gray en">&gt;</span> 发起投票 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px"
+                                              href="javascript:location.replace(location.href);" title="刷新"><i
+        class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add">
+        <input type="hidden" name="__token__" value="{$Request.token}"/>
+        <input type="hidden" name="apply_type" value="2"/>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>投票主题：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="填写投票主题" name="name" id="name" style="width:20%">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>投票类型：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <span class="select-box" style="width:20%">
+                <select name="type" class="select" id="leixing" onchange="javascript:doit();">
+                    <option value="">选择投票类型</option>
+                    <option value="1">发布道具卡、奖励</option>
+                    <option value="2">系统功能管理</option>
+                    <option value="3">选举超级节点</option>
+                </select>
+                </span>
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>开始时间：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text Wdate" name="start" id="countTimestart" onfocus="selecttime(1)"
+                       value="{$Request.get.end|default=''}" size="17" class="date" readonly style="width:140px;">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>结束时间：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text Wdate" name="end" id="countTimeend" onfocus="selecttime(2)"
+                       value="{$Request.get.end|default=''}" size="17" class="date" readonly style="width:140px;">
+            </div>
+        </div>
+        <div class="row cl" id="need" style="display: none">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>所需资金：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" name="need" style="width:20%">
+            </div>
+        </div>
+        <div class="row cl" id="us_type">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>参与范围：</label>
+            <dl class="cl permission-list2">
+                <dd>
+                    <label class="">
+                        <input type="checkbox" class="authrule" name="levels[]" value="4">超级节点</label>&nbsp;
+                    <label class="">
+                        <input type="checkbox" class="authrule" name="levels[]" value="3" checked>系统服务商</label>&nbsp;
+                    <label class="">
+                        <input type="checkbox" class="authrule" name="levels[]" value="2">商家</label>&nbsp;
+                    <label class="">
+                        <input type="checkbox" class="authrule" name="levels[]" value="1">普通会员</label>&nbsp;
+                <dd>
+            </dl>
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+                <button onclick="return add();" class="btn btn-primary radius" type="submit"><i class="Hui-iconfont">&#xe632;</i>
+                    确认提交
+                </button><!--  -->
+            </div>
+        </div>
+    </form>
+</div>
+
+{include file="public/_footer" /}
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="/static/admin/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+<script type="text/javascript">
+    function doit() {
+        var obj=document.getElementById("leixing");
+        var sel_val = obj.options[obj.selectedIndex].value;
+        if (sel_val=='') {
+            var div = document.getElementById("need");
+            div.style.display="block";
+            var us_type = document.getElementById("us_type");
+            us_type.style.display="block";
+        }
+        if (sel_val==1) {
+            var div = document.getElementById("need");
+            div.style.display="block";
+            var us_type = document.getElementById("us_type");
+            us_type.style.display="block";
+        }
+        if (sel_val==2) {
+            var div = document.getElementById("need");
+            div.style.display="none";
+            var us_type = document.getElementById("us_type");
+            us_type.style.display="block";
+        }
+        if (sel_val==3) {
+            var us_type = document.getElementById("us_type");
+            us_type.style.display="none";
+        }
+
+    }
+
+    function add() {
+        $.post('{:url("vote")}', $('#form-article-add').serialize()).success(function (data) {
+            layer.msg(data.msg);
+            if (data.code) {
+                setTimeout(function () {
+                    location.href = '';
+                }, 1000);
+            }
+        });
+        return false;
+    }
+
+    function selecttime(flag) {
+        var date = new Date();
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        var hour = date.getHours();
+        var minute = date.getMinutes();
+        var minTime = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
+        if (flag == 1) {
+            var endTime = $("#countTimeend").val();
+            if (endTime != "") {
+                WdatePicker({dateFmt: 'yyyy-MM-dd HH:mm', maxDate: endTime})
+            } else {
+                WdatePicker({dateFmt: 'yyyy-MM-dd HH:mm', minDate: minTime})
+            }
+        } else {
+            var startTime = $("#countTimestart").val();
+            if (startTime != "") {
+                WdatePicker({dateFmt: 'yyyy-MM-dd HH:mm', minDate: startTime})
+            } else {
+                WdatePicker({dateFmt: 'yyyy-MM-dd HH:mm', minDate: minTime})
+            }
+        }
+    }
+</script>
+</body>
+</html>

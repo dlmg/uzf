@@ -1,0 +1,64 @@
+{include file="public/_meta" /}
+<title></title>
+</head>
+<body>
+<div class="page-container">
+	<!-- The DIV for a Diagram needs an explicit size or else we will not see anything.
+	     In this case we also add a background color so we can see that area. -->
+	<div id="myDiagramDiv"
+	     style="width:800px; height:600px; background-color: #DAE4E4;"></div>
+	</div>
+  <input type="hidden" name="" id="listvalue" value="{$list}">
+{include file="public/_footer" /}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+
+var nodelist = $("#listvalue").attr("value");
+nodelist = eval(nodelist);
+
+var $ = go.GraphObject.make;
+ 
+var myDiagram =
+  $(go.Diagram, "myDiagramDiv",
+    {
+      initialContentAlignment: go.Spot.Center, // center Diagram contents
+      "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
+      layout: $(go.TreeLayout, // specify a Diagram.layout that arranges trees
+                { angle: 90, layerSpacing: 35 })
+    });
+ 
+// the template we defined earlier
+myDiagram.nodeTemplate =
+  $(go.Node, "Horizontal",
+    { background: "#44CCFF" },
+    /*$(go.Picture,
+      { margin: 10, width: 50, height: 50, background: "red" },
+      new go.Binding("source")),*/
+    $(go.TextBlock, "Default Text",
+      { margin: 2, stroke: "white", font: "bold 12px sans-serif" },
+      new go.Binding("text", "name"))
+  );
+ 
+// define a Link template that routes orthogonally, with no arrowhead
+myDiagram.linkTemplate =
+  $(go.Link,
+    { routing: go.Link.Orthogonal, corner: 5 },
+    $(go.Shape, { strokeWidth: 3, stroke: "#555" })); // the link shape
+ 
+var model = $(go.TreeModel);
+//console.log(nodelist);
+model.nodeDataArray = nodelist;
+/*[
+  { key: "1",              name: "Don Meow"},
+  { key: "2", parent: "1", name: "Demeter"},
+  { key: "3", parent: "1", name: "Copricat"},
+  { key: "4", parent: "3", name: "Jellylorum"},
+  { key: "5", parent: "3", name: "Alonzo",},
+  { key: "6", parent: "2", name: "Munkustrap"}
+];*/
+myDiagram.model = model;
+    
+	
+</script> 
+</body>
+</html>

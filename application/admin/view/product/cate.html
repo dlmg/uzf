@@ -1,0 +1,179 @@
+{include file="public/_meta" /}
+<title></title>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>服务管理 <span class="c-gray en">&gt;</span> 服务分类 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+	 <div class="cl pd-5 bg-1 bk-gray mt-20">
+		<span class="l">
+			<a href="javascript:;" onclick="create(0,'cate_add','添加分类')" class="btn btn-primary radius">
+			<i class="Hui-iconfont">&#xe600;</i> 分类</a>
+		</span>
+		<span class="r">共有数据：<strong>{$list->total()}</strong> 条</span> </div>
+	<div class="mt-20">
+	<table class="table table-border  table-hover table-bg table-sort">
+		<thead>
+			<tr class="text-c">
+				<th>ID</th>
+				<!-- <th>排序</th>  -->
+				<th>分类名称</th>
+				<!-- <th>所属大类</th> -->
+				<!-- <th>分类公排</th> -->
+				<th>分类图标</th>
+				<th>消费时长设置</th>
+
+				<th>添加时间</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			{volist name='list' id="vo"}
+				<tr class="text-c">
+					<td>{$vo.id}</td>
+					<!-- <td><input type="text" value="{$vo.ca_sort}" onchange="change({$vo.id},$(this).val(),'ca_sort')" style="width:60px"></td> -->
+					<td>┣{$vo.ca_name}</td>
+					<!-- <td>┣&nbsp;<input type="text" value="{$vo.ca_name}" onchange="change({$vo.id},$(this).val(),'ca_name')"></td> -->
+
+					<!-- <td><a href="javascript:;" onclick="showCateLine({$vo.id})">[点击查看]</a></td> -->
+					<td><img src="{$vo.ca_pic}" style="width:60px;height:60px" alt="">
+					</td>
+					<td>无</td>
+					<td>{$vo.ca_add_time}</td>
+					<td class="td-manage">
+
+						<!-- <a style="text-decoration:none" onclick="del({$vo.id},'Cate')" title="删除"><i class="Hui-iconfont">&#xe706;</i></a> -->
+						<a style="text-decoration:none" onclick="create({$vo.id},'cate_edit','修改分类')" title="编辑"><i class="Hui-iconfont">&#xe6df;</i></a>
+						<!-- <a href="{:url('excel')}" title="下载"><i class="Hui-iconfont">&#xe706;</i></a> -->
+					</td>
+				</tr>
+
+				{volist name=":getChild($vo['id'])" id="voo"}
+					<tr class="text-c">
+						<td>{$voo.id}</td>
+<!--						<td><input type="text" value="{$voo.ca_sort}" onchange="change({$voo.id},$(this).val(),'ca_sort')" style="width:60px"></td>	-->
+						<!-- <td><input type="text" value="{$voo.ca_sort}" onchange="change({$voo.id},$(this).val(),'ca_sort')"></td> -->			
+						<td ><span style="margin-left: 80px">┣&nbsp;{$voo.ca_name}</span></td>
+
+						<td><img src="{$voo.ca_pic}" style="width:60px;height:60px" alt=""></td>
+						<td>无</td>
+						<td>{$voo.ca_add_time}</td>
+						<td class="td-manage">
+
+							<a style="text-decoration:none" onclick="del({$voo.id},'Cate')" title="删除"><i class="Hui-iconfont">&#xe706;</i></a>
+							<a style="text-decoration:none" onclick="create({$voo.id},'cate_edit','修改分类')" title="编辑"><i class="Hui-iconfont">&#xe6df;</i></a>
+							<!-- <a href="{:url('excel')}" title="下载"><i class="Hui-iconfont">&#xe706;</i></a> -->
+						</td>
+					</tr>
+					{volist name=":getChild($voo['id'])" id="vs"}
+						<tr class="text-c">
+							<td>{$vs.id}</td>
+
+							<td ><span style="margin-left: 150px">┗━&nbsp;{$vs.ca_name}</span></td>
+<!--							<td ><span style="margin-left: 150px">┗━&nbsp;{$vs.ca_name}</span></td>-->
+
+							<td><img src="{$vs.ca_pic}" style="width:60px;height:60px" alt=""></td>
+							<td><a style="color: red;text-decoration:none" onclick="create({$vs.id},'last','消费时长')" title="消费时长">消费时长</a></td>
+							<td>{$vs.ca_add_time}</td>
+							<td class="td-manage">
+
+								<a style="text-decoration:none" onclick="del({$vs.id},'Cate')" title="删除"><i class="Hui-iconfont">&#xe706;</i></a>
+								<a style="text-decoration:none" onclick="create({$vs.id},'cate_edit','修改分类')" title="编辑"><i class="Hui-iconfont">&#xe6df;</i></a>
+								<!-- <a href="{:url('excel')}" title="下载"><i class="Hui-iconfont">&#xe706;</i></a> -->
+							</td>
+						</tr>
+					{/volist}
+				{/volist}
+			{/volist}
+		</tbody>
+
+	</table>
+	<div class="pages" style="margin:20px;float: right; ">{$list|raw}</div>
+	</div>
+</div>
+{include file="public/_footer" /}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+function create(id,url,key){
+	var url = "{:url('"+url+"')}?ca_id="+id;
+	creatIframe(url,key);
+}
+function change(id,value,key){
+	layer.confirm('确定要更改么？', {
+	      btn: ['确定', '取消']
+	    }, function(index, layero){
+	        $.ajax({
+	            type: "post",
+	            url: "{:url('catechange')}",
+	            data: {id:id,value:value,key:key},
+	            success: function(data) {
+	             	if(data.code){
+	             		location.href = '';
+	             	}
+	            }
+	        });
+	    });
+}
+
+function del(id,key){
+    layer.confirm('确定要删除么？', {
+      btn: ['确定', '取消']
+    }, function(index, layero){
+        $.ajax({
+            type: "post",
+            url: "{:url('catedelete')}",
+            data: {id:id,key:key},
+            success: function(data) {
+                layer.msg(data.msg);
+                if(data.code==1){
+                    setTimeout(function(){
+                        location.href = data.url;
+                    },1000);
+                }
+            }
+        });
+    });
+}
+function showCateLine(id){
+	var url = "{:url('showCateLine')}?id="+id;
+	layer_show('分类公排图',url);
+	//layer_show('发货页面',url,'600','300');
+}
+function eee(dada) {
+        var data = new FormData();
+        data.append('file', dada[0].files[0]);
+        var index = layer.load(1, { shade: false }); //0代表加载的风格，支持0-2
+        $.ajax({
+            url: '{:url("upload")}',
+            type: 'POST',
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data) {
+                layer.msg(data.msg);
+                if (data.code) {
+                    $('.logo').attr('src',data.data);
+                    $('input[name="pd_head_pic"]').val(data.data);
+                }
+                layer.close(index);
+            },
+            error: function() {
+                layer.close(index);
+                layer.msg('上传出错');
+            }
+        });
+    }
+    function cate_pic(id,value,key){	
+    $.ajax({
+        type: "post",
+        url: "{:url('catechange')}",
+        data: {id:id,value:value,key:key},
+        success: function(data) {
+         	if(data.code){
+         		location.href = '';
+         	}
+        }
+    });
+}
+</script>
+</body>
+</html>

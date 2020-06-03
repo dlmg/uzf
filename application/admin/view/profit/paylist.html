@@ -1,0 +1,101 @@
+{include file="public/_meta" /}
+<title></title>
+</head>
+
+<body>
+    <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>财务管理 <span class="c-gray en">&gt;</span> 支付记录<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+    <div class="page-container">
+        <div class="text-c">
+            <form class="Huiform" method="get" action="">
+            </span>
+                <input type="text" class="input-text" style="width:150px" placeholder="用户姓名、手机号" id="" name="keywords" value="{$Request.get.keywords|default=''}">
+                <button type="submit" class="btn btn-success radius" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+            </form>
+        </div>
+        <div class="cl pd-5 bg-1 bk-gray mt-20">
+            <span style="margin: 50px">今日销售额：{$todaysold} </span>
+            <span >累计销售额：{$allsold} </span>
+            <span class="r">共有数据：<strong>{$list->total()}</strong> 条</span>
+        </div>           
+             </div>
+        <div class="mt-20">
+            <table class="table table-border  table-hover table-bg table-sort">
+                <thead>
+                    <tr class="text-c">
+                        <th>付款人</th>
+                        <th>手机号</th>
+                        <th>账号</th>
+                        <th>金额</th>
+                        <th>类型</th>
+                        <th>状态</th>
+                        <th>时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {volist name='list' id="vo"}
+                    <tr class="text-c">
+                        <td>{$vo.us_nickname}</td>
+                        <td>{$vo.us_tel}</td>
+                        <td>{$vo.us_account}</td>
+                        <td>{$vo.money}</td>
+                        <td>{$vo.type_text}</td>
+                        <td>{$vo.status_text}</td>
+                        <td>{$vo.add_time}</td>
+                        <!-- <td class="td-manage">
+                            <a style="text-decoration:none" onclick="change({$vo.id},1,'tx_status')" title="给予提现"><i class="Hui-iconfont">&#xe634;</i></a>
+                        </td> -->
+                    </tr>
+                    {/volist}
+                </tbody>
+            </table>
+            <div class="pages" style="margin:20px;float: right; ">{$list|raw}</div>
+        </div>
+        {include file="public/_footer" /}
+        <!--请在下方写此页面业务相关的脚本-->
+        <script type="text/javascript">
+        $('select[name="wa_type"]').val({$Request.get.wa_type});
+
+        function create(id, url, key) {
+            var url = "{:url('" + url + "')}?id=" + id;
+            creatIframe(url, key);
+        }
+        function change(id,value,key){
+        layer.confirm('确定要审批么？', {
+              btn: ['确定', '取消']
+            }, function(index, layero){
+                $.ajax({
+                    type: "post",
+                    url: "{:url('change')}",
+                    data: {id:id,value:value,key:key},
+                    success: function(data) {
+                        if(data.code){
+                            layer.msg(data.msg);
+                            setTimeout("window.location='';",500);
+                        }
+                    }
+                });
+            });
+        }
+        function del(id, key) {
+            layer.confirm('确定要删除么？', {
+                btn: ['确定', '取消']
+            }, function(index, layero) {
+                $.ajax({
+                    type: "post",
+                    url: "{:url('Every/allDel')}",
+                    data: { id: id, key, key },
+                    success: function(data) {
+                        layer.msg(data.msg);
+                        if (data.code == 1) {
+                            setTimeout(function() {
+                                location.href = data.url;
+                            }, 1000);
+                        }
+                    }
+                });
+            });
+        }
+        </script>
+</body>
+
+</html>

@@ -1,0 +1,141 @@
+{include file="public/_meta" /}
+<title></title>
+<style type="text/css">
+    .inp {
+        width: 150px;
+        height: 25px;
+    }
+    .inp:focus {
+        outline:none;
+        border: 1px solid red;
+    }
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>会员管理 <span class="c-gray en">&gt;</span> 商户申请列表
+    <a class="btn btn-success radius r" style="line-height:1.5em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
+    <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px;margin-right:6px " onclick="excel()" title="导出"><i class="Hui-iconfont">&#xe644;</i></a>
+</nav>
+<div class="page-container">
+    <div class="text-c">
+        <form class="Huiform" method="get" action="" target="_self">
+            状态：
+            <span class="select-box inline">
+			<select name="us_status" class="select">
+				<option value="">全部</option>
+				<option value="1">正常</option>
+				<option value="0" style="color:red;">被禁用</option>
+			</select>
+		</span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- 类型：
+            <span class="select-box inline">
+                <select name="gave_status" class="select">
+                    <option value="">全部</option>
+                    <option value="0">会员</option>
+                    <option value="1">审核中</option>
+                    <option value="2">商家</option>
+                </select>
+            </span> -->
+            <input type="text" class="input-text" style="width:150px" placeholder="备注名、账号、手机号" id="" name="keywords" value="{$Request.get.keywords|default=''}">
+            <button type="submit" class="btn btn-success radius" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+
+        <span class="r" style="margin: 10px">共有数据：<strong>{$list->total()}</strong> 条</span> </div>
+    <div class="mt-20">
+        <table class="table table-border  table-hover table-bg table-sort">
+            <thead>
+            <tr class="text-c">
+                <th>会员名称</th>
+                <th>申请商户名称</th>
+                <th>商户类别</th>
+                <th>详细地址</th>
+                <th>店铺环境</th>
+                <th>负责人</th>
+                <th>负责人联系电话</th>
+                <th>审核状态</th>
+                <th>申请时间</th>
+                <th>通过时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {volist name='list' id="vo"}
+            <tr class="text-c">
+                <td>{$vo.user_id_text}</td>
+                <td>{$vo.merchant_name}</td>
+                <td>{$vo.merchant_style_text}</td>
+                <td>{$vo.address}</td>
+                <td>{$vo.environment}</td>
+                <td>{$vo.person_in_charge}</td>
+                <td>{$vo.telephone}</td>
+                <td>{$vo.status_text}</td>
+                <td>{$vo.start_time}</td>
+                <td>{$vo.apply_time}</td>
+                <td class="td-manage">
+<!--                    <a title="编辑" href="javascript:;" onclick="create({$vo.id},'edit','修改用户')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a>-->
+                    <a style="text-decoration:none" onclick="del({$vo.id})" title="删除"><i class="Hui-iconfont">&#xe706;</i></a>
+                </td>
+            </tr>
+            {/volist}
+            </tbody>
+        </table>
+        <div class="pages" style="margin:20px;float: right; ">{$list|raw}</div>
+    </div>
+    {include file="public/_footer" /}
+    <!--请在下方写此页面业务相关的脚本-->
+    <script type="text/javascript">
+        $('select[name="us_status"]').val({$Request.get.us_status});
+        $('select[name="gave_status"]').val({$Request.get.gave_status});
+
+
+        function create(id,url,key){
+            var url = "{:url('"+url+"')}?id="+id;
+            creatIframe(url,key);
+        }
+
+
+        function change(id,value,key){
+            layer.confirm('确定要更改么？', {
+                btn: ['确定', '取消']
+            }, function(index, layero){
+                $.ajax({
+                    type: "post",
+                    url: "{:url('change')}",
+                    data: {id:id,value:value,key:key},
+                    success: function(data) {
+                        if(data.code){
+                            location.href = '';
+                        }
+                    }
+                });
+            });
+        }
+
+
+
+        function del(id){
+            layer.confirm('确定要删除么？', {
+                btn: ['确定', '取消']
+            }, function(index, layero){
+                $.ajax({
+                    type: "post",
+                    url: "{:url('delete')}",
+                    data: {id:id},
+                    success: function(data) {
+                        layer.msg(data.msg);
+                        setTimeout("window.location=\"{:url('User/index')}\"",500);
+                    }
+                });
+            });
+        }
+
+        function excel(){
+            var url = "{:url('excel')}";
+            creatIframe(url,'表格导出');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+{include file="public/_meta" /}
+<title>订单详情</title>
+</head>
+<body class="pos-r">	
+	<div class="page-container">
+		<div class="row cl">
+<!--			<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px;margin-right:6px " href ="{:url('excel')}?id={$id}" title="导出"><i class="Hui-iconfont">&#xe644;</i></a>-->
+
+			<div class="col-xs-11 col-sm-12 ">
+				<table id="tball" class="table table-border radius">
+					<thead id="" class="text-c">
+						<tr>
+							<th width="25">
+							<th>ID</th>
+							<th>图片</th>
+							<th>服务名称</th>
+							<th>价格</th>
+
+							<th></th>
+						</tr>
+					</thead>
+					<tbody id="tbMain">
+						{volist name="list" id="vo"}
+
+							<tr class="text-c">
+								<th width="25">
+								<td>{$vo.id}</td>
+								<td><img  style="width: 40px;height: 40px" class="product-thumb image" src="{$vo.or_pd_pic[0]}" alt=""></td>
+								<td>{$vo.or_pd_name}</td>
+								<td>{$vo.or_pd_price}</td>
+
+								<td></td>
+							</tr>
+						{/volist}
+					</tbody>
+
+				</table>
+			</div>
+		</div>
+	</div>
+	<!-- <div>客户留言：{$remark}</div>
+	<div>（支付凭证）<img src="{$voucher}"></div> -->
+	
+{include file="public/_footer"/}
+<!--请在下方写此页面业务相关的脚本-->
+        <script type="text/javascript" src="/static/admin/lib/My97DatePicker/4.8/WdatePicker.js"></script>
+        <script type="text/javascript">
+         function excel(){
+         	alert(1111111111);
+            var url = "{:url('excel')}";
+            creatIframe(url,'表格导出');
+        }
+        </script>
+</body>
+</html>

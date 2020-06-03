@@ -1,0 +1,21 @@
+<script type="text/javascript" src="/static/admin/lib/jquery/1.9.1/jquery.min.js"></script> 
+<script type="text/javascript" src="/static/admin/lib/layer/2.4/layer.js"></script>
+<script type="text/javascript" src="/static/admin/static/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript" src="/static/admin/static/h-ui.admin/js/H-ui.admin.js"></script> 
+<script type="text/javascript" src="/static/admin/static/gojs/go.js"></script>
+<script type="text/javascript" src="/static/admin/static/qrcodejs-master/qrcode.js"></script>
+<script>
+	var aa = "{$Request.controller}";
+	var bb = "{$Request.action}";
+	// console.log(aa+"/"+bb);
+</script>
+{neq name="Think.session.admin.id" value="1"}
+	<script type="text/javascript">
+	var nodeData = [{$Think.session.rules}];
+	$('.rule_node').addClass('hidden');
+	$.each(nodeData, function (index, value) {
+		$('.sidebar').find('li[data-node-id="' + value + '"]').removeClass('hidden');
+		$('.sidebar').find('dt[data-node-id="' + value + '"]').removeClass('hidden');
+	});
+	</script>
+{/neq}

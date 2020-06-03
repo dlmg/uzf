@@ -1,0 +1,108 @@
+{include file="public/_meta" /}
+<title></title>
+</head>
+<body>
+<nav class="breadcrumb">
+	<i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>会员管理 <span class="c-gray en">&gt;</span> 会员列表 
+	<!-- <a class="btn btn-success radius r" style="line-height:1.5em;margin-top:3px" href="javascript:void(0);" onclick="downdo()" title="下载" ><i class="Hui-iconfont">&#xe640;</i></a>&nbsp;&nbsp; -->
+	<a class="btn btn-success radius r" style="line-height:1.5em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
+</nav>
+<div class="page-container">
+	<div class="text-c">
+	<form class="Huiform" method="get" action="" target="_self">
+		<input type="text" class="input-text" style="width:150px" placeholder="昵称、账号、手机号" id="" name="keywords" value="{$Request.get.keywords|default=''}">
+		<button type="submit" class="btn btn-success radius" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+		</form>
+	</div>
+	<div class="cl pd-5 bg-1 bk-gray mt-20">
+		<span class="r">共有数据：<strong>{$list->total()}</strong> 条</span> </div>
+	<div class="mt-20">
+	<table class="table table-border  table-hover table-bg table-sort">
+		<thead>
+			<tr class="text-c">				
+				<th>账户名</th>
+				<th>姓名</th>
+				<th>手机号</th>
+				<th>推荐人</th>
+				<th>注册方式</th>	
+				<th>扫码注册时间</th>			
+				<th>审批代理</th>
+			</tr>
+		</thead>
+		<tbody>
+			{volist name='list' id="vo"}
+				<tr class="text-c">
+					<td>{$vo.us_account}</td>
+					<td>{$vo.us_nickname}</td>
+					<td>{$vo.us_tel}</td>
+					<td>{$vo.p_nickname}</td>
+					<td>{$vo.us_tel}</td>
+					<td>{$vo.us_add_time}</td>					
+															
+													
+					<td class="td-manage">		
+						<a style="text-decoration:none" onClick="change({$vo.id},2,'gave_status')" href="javascript:;" title="审批"><i class="Hui-iconfont">&#xe634;</i></a>			
+						<!-- <a style="text-decoration:none" onclick="record({$vo.id},'edit','会员详情')"  title="会员详情"><i class="Hui-iconfont">&#xe6c6;</i></a>
+						{if condition="$vo.us_status eq 1"}
+						<a style="text-decoration:none" onClick="change({$vo.id},0,'us_status')" href="javascript:;" title="停用"><i class="Hui-iconfont">&#xe631;</i></a> 
+						{else/}
+						<a onClick="change({$vo.id},1,'us_status')" href="javascript:;" title="启用" style="text-decoration:none"><i class="Hui-iconfont">&#xe615;</i></a>
+						{/if}
+						<a title="编辑" href="javascript:;" onclick="create({$vo.id},'edit','修改用户')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a>
+						<a style="text-decoration:none" onclick="create({$vo.id},'addr','地址列表')" title="地址"><i class="Hui-iconfont">&#xe671;</i></a>
+						<a style="text-decoration:none" onclick="del({$vo.id})" title="删除"><i class="Hui-iconfont">&#xe706;</i></a> -->
+					</td>
+				</tr>
+			{/volist}
+		</tbody>
+	</table>
+	<div class="pages" style="margin:20px;float: right; ">{$list|raw}</div>
+</div>
+{include file="public/_footer" /}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+$('select[name="us_status"]').val({$Request.get.us_status});
+$('select[name="us_level"]').val({$Request.get.us_level});
+
+function create(id,url,key){
+	var url = "{:url('"+url+"')}?id="+id;
+	creatIframe(url,key);
+}
+
+function change(id,value,key){
+	layer.confirm('确定要审批该消费商吗？审批后会创建该消费商的节点、公排等...', {
+	      btn: ['确定', '取消']
+	    }, function(index, layero){
+	        $.ajax({
+	            type: "post",
+	            url: "{:url('approveLine')}",
+	            data: {id:id,value:value,key:key},
+	            success: function(data) {
+	            	layer.msg(data.msg);
+	             	if(data.code){
+	             		location.href = '';
+	             	}
+	             	location.href = '';
+	            }
+	        });
+	    });
+}
+
+function del(id){
+    layer.confirm('确定要删除么？', {
+      btn: ['确定', '取消']
+    }, function(index, layero){
+        $.ajax({
+            type: "post",
+            url: "{:url('delete')}",
+            data: {id:id},
+            success: function(data) {            	
+                layer.msg(data.msg);
+                setTimeout("window.location=\"{:url('User/index')}\"",300);
+            }
+        });
+    });
+}	
+</script> 
+</body>
+</html>

@@ -1,0 +1,177 @@
+{include file="public/_meta" /}
+<title></title>
+<style>	
+		input{
+			width:30px;
+			border:none;
+		}
+
+</style>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>服务管理 <span class="c-gray en">&gt;</span> 服务列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+	<div class="text-c">
+	<form class="Huiform" method="get" action="" target="_self">
+		<!-- 排序：
+		<span class="select-box inline">
+			<select name="orderby" class="select">
+				<option value="">全部</option> 
+				<option value="1">热销</option> 
+				<option value="2">新品</option>
+				<option value="3">价格升序</option>
+				<option value="4">价格降序</option>
+			</select>
+		</span>&nbsp;&nbsp; -->
+		状态：
+		<span class="select-box inline">
+			<select name="pd_status" class="select">
+				<option value="">全部</option>
+	<!-- 			<option value="6">热门大图</option>
+				<option value="5">热门推荐</option>
+				<option value="4">首页显示</option>
+				<option value="3">热销商品</option>  -->
+				<option value="2">上架</option> 
+				<option value="1">下架</option>
+				<!-- <option value="0" style="color:red;">仓库</option> -->
+			</select>
+		</span>&nbsp;&nbsp;
+
+		<span class="select-box inline">			
+			<select name="ca_id" class="select">
+				<option value="">全部分类</option> 
+				{volist name='ca_list' id="vo"}
+					<option value="{$vo.id}">┣{$vo.ca_name}</option>
+						<!-- {volist name=":getChild($vo['id'])" id="voo"}
+						<option value="{$voo.id}">┗━{$voo.ca_name}</option>
+						{/volist} -->
+				{/volist}
+			</select>			
+		</span>
+		<input type="text" class="input-text" style="width:150px" placeholder="服务名称" name="pd_name" value="{$Request.get.pd_name|default=''}">
+		<button type="submit" class="btn btn-success radius" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+	</form>
+	</div>
+	<div class="cl pd-5 bg-1 bk-gray mt-20">
+<!--		<span class="l">-->
+<!--			<a href="javascript:;" onclick="create(0,'add','添加服务')" class="btn btn-primary radius">-->
+<!--			<i class="Hui-iconfont">&#xe600;</i> 服务</a>-->
+<!--		</span> -->
+		<span class="r">共有数据：<strong>{$list->total()}</strong> 条</span> </div>
+	<div class="mt-20">
+	<table class="table table-border  table-hover table-bg table-sort">
+		<thead>
+			<tr class="text-c">
+				<th>ID</th>
+				<th>服务名称</th>
+				<!-- <th>所属店铺</th> -->
+				<th>缩略图</th>
+				<th>价格</th>
+				
+				<th>分类名称</th>
+
+				<!-- <th>产品销量</th> -->
+				<th>状态</th>
+				<th>审核状态</th>
+				 <th>竞拍</th>
+<!--				<th>代理数量</th> -->
+				<th>添加时间</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			{volist name='list' id="vo"}
+				<tr class="text-c">
+					<td>{$vo.id}</td>
+					<td>{$vo.pd_name}</td>
+					<!-- <td>{$vo.st_name_text}</td> -->
+					<td><img src="{$vo.pd_head_pic}" style="width:60px;height:60px" alt=""></td>
+					<td>{$vo.pd_price}</td>
+															
+					<td>{$vo.ca_name}</td>
+
+					<!-- <td>{$vo.pd_sales}</td>					 -->
+					<!-- <td><input type="text" value="{}" onchange="change({$vo.id},$(this).val(),'')"></td>
+					<td><input type="text" value="{$vo.pd_sales}" onchange="change({$vo.id},$(this).val(),'pd_sales')"></td> -->			
+					<td><select onchange="change({$vo.id},$(this).val(),'pd_status')">
+							<!-- 	<option value="6" {if condition="$vo.pd_status eq 6"}selected{/if}>热门大图</option>
+								<option value="5" {if condition="$vo.pd_status eq 5"}selected{/if}>热门推荐</option>
+								<option value="4" {if condition="$vo.pd_status eq 4"}selected{/if}>首页显示</option>
+								<option value="3" {if condition="$vo.pd_status eq 3"}selected{/if}>热销服务</option> -->
+								<option value="2" {if condition="$vo.pd_status eq 2"}selected{/if}>上架</option>
+								<option value="1" {if condition="$vo.pd_status eq 1"}selected{/if}>下架</option>
+								<!-- <option value="0" {if condition="$vo.pd_status eq 0"}selected{/if}>仓库</option> -->
+						</select>
+					</td>
+
+					{if condition="$vo.st_status eq 2"}
+						<td style="color: green">审核通过</td>
+					{elseif condition="$vo.st_status eq 1"}
+						<td style="color:red">审核中</td>
+
+					{/if}
+
+					<td ><a title="竞拍详情" href="javascript:;" onclick="create({$vo.id},'bidding','竞拍详情')" class="ml-5" style="text-decoration:none;color: #902000">竞拍详情</a></td>
+					<td>{$vo.add_time}</td>
+					<td class="td-manage">
+						<a title="编辑" href="javascript:;" onclick="create({$vo.id},'edit','修改服务')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a>
+						<a style="text-decoration:none" onclick="del({$vo.id},'Product')" title="删除"><i class="Hui-iconfont">&#xe706;</i></a>
+					</td>
+				</tr>
+			{/volist}
+		</tbody>
+	</table>
+	<div class="pages" style="margin:20px;float: right; ">{$list|raw}</div>
+</div>
+{include file="public/_footer" /}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+	$('select[name="pd_status"]').val({$Request.get.pd_status});
+	$('select[name="orderby"]').val({$Request.get.orderby});
+	$('select[name="ca_id"]').val({$Request.get.ca_id});
+function create(id,url,key){
+	var url = "{:url('"+url+"')}?id="+id;
+	creatIframe(url,key);
+}
+function change(id,value,key){
+	layer.confirm('确定要更改么？', {
+	      btn: ['确定', '取消']
+	    }, function(index, layero){
+	        $.ajax({
+	            type: "post",
+	            url: "{:url('change')}",
+	            data: {id:id,value:value,key:key},
+	            success: function(data) {
+	            	console.log(data);
+	             	if(data.code == 2){
+	             		layer.msg('超过最大限制');
+	             	}else if(data.code == 1){             		
+	             		location.href = '';
+	             	}
+	            }
+	        });
+	    });
+}
+
+function del(id,key){
+    layer.confirm('确定要删除么？', {
+      btn: ['确定', '取消']
+    }, function(index, layero){
+        $.ajax({
+            type: "post",
+            url: "{:url('dodelete')}",
+            data: {id:id,key:key},
+            success: function(data) {
+                layer.msg(data.msg);
+                if(data.code==1){
+                    setTimeout(function(){
+                        location.href = data.url;
+                    },1000);
+                }
+            }
+        });
+    });
+}	
+</script> 
+</body>
+</html>

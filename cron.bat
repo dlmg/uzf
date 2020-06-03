@@ -1,0 +1,1 @@
+D:\phpStudy\php\php-7.0.12-nts\php.exe -q ../../www/cjt/public/index.php admin/gave/share

@@ -1,0 +1,164 @@
+{include file="public/_meta" /}
+
+<title>兑换管理</title>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页
+	<span class="c-gray en">&gt;</span>
+	个人中心
+	<span class="c-gray en">&gt;</span>
+	兑换管理
+	<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
+</nav>
+<div class="page-container">
+	<form class="form form-horizontal" id="form-article-add">
+		<div id="tab-system" class="HuiTab">
+			<div class="tabBar cl">
+				<span>申请兑换</span>
+				<span>兑换记录</span>
+			</div>
+			<div class="tabCon">
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">
+						<span class="c-red">*</span>
+						积分余额：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" value="{$admin['integral']}" class="input-text" style="width:10%" disabled>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">
+						<span class="c-red">*</span>
+						银行卡信息：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" name="" id="website-Keywords" value="{$admin['acc_address']}   {$admin['account']}" class="input-text" disabled>
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">
+						<span class="c-red">*</span>
+						兑换金额：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<input type="text" name="jine" id="website-description" placeholder="请输入金额" value="" class="input-text" style="width:10%">
+					</div>
+				</div>
+				<div class="row cl">
+					<label class="form-label col-xs-4 col-sm-2">
+						<span class="c-red">*</span>
+						兑换说明：</label>
+					<div class="formControls col-xs-8 col-sm-9">
+						<p>
+							1. 为保证兑换成功，目前仅支持兑换到储蓄卡，且保证银行卡号码、真实姓名、开户行信息正确. <br />
+							2. 兑换积分必须大于100元，每周仅限1次，每次兑换平台将收取千分之五手续费； <br />
+							3. 如果您忘记了自己的开户行名称，可以通过拨打银行的客服电话详细咨询。特别提醒：请尽量要求银行客服人员提供给您完整的开户行名称。<br/> 
+							附银行客服电话： 中国工商银行 95588 中国建设银行 95533 中国农业银行 95599 招商银行 95555 交通银行 95559	
+						</p>
+					</div>
+				</div>
+				<div class="row cl">
+					<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+						<button onclick="return add();" class="btn btn-primary radius" type="submit"><i class="Hui-iconfont">&#xe632;</i> 提交</button>
+						<button class="btn btn-default radius rst" type="reset">&nbsp;&nbsp;重置&nbsp;&nbsp;</button>
+					</div>
+				</div>
+			</div>
+			<div class="tabCon">
+				<div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="r">共有数据：<strong>{$list->total()}</strong> 条</span> </div>
+				<table class="table table-border  table-hover table-bg table-sort">
+						<thead>
+							<tr class="text-c">
+								<th>ID</th>
+								<th>兑换金额</th>
+
+								<th>手续费</th>
+								<th>实际到账</th>
+								<th>添加时间</th>
+								<th>状态</th>
+								<th>处理时间</th>
+								{if condition="session('role_id') eq 1"}
+								<th>兑换人</th>
+								<th>操作</th>
+								{/if}
+							</tr>
+						</thead>
+						<tbody>
+						{volist name="list" id="vo"}
+							<tr class="text-c">
+								<td>{$vo.Id}</td>
+								<td>{$vo.jine}</td>
+								<td>{$vo.poundage}</td>
+								<td>{$vo.shidao}</td>
+								<td>{$vo.add_time}</td>
+								<td>{$vo.status_text}</td>
+								<td>{$vo.deal_time}</td>
+								{if condition="session('role_id') eq 1"}
+								<td>{$vo.aid_text}</td>	
+								<td>
+									{if condition="$vo.status eq 0"}
+										<a onclick="check({$vo.Id},2,'不通过')"><i class="Hui-iconfont" title="审核不过">&#xe60b;</i</a> 
+										<a onclick="check({$vo.Id},1,'通过')"><i class="Hui-iconfont" title="审核通过">&#xe6a7;</i</a> 
+									{else}
+										----
+									{/if}
+									<!-- <a style="text-decoration:none" onclick="edit({$vo.Id},'attribute','管理属性')"  title="编辑属性"><i class="Hui-iconfont">&#xe600;</i></a>
+									<a style="text-decoration:none" onclick="edit({$vo.Id},'editProduct','商品编辑')"  title="编辑"><i class="Hui-iconfont">&#xe6df;</i></a> -->
+									
+								</td>
+								{/if}
+							</tr>
+						{/volist}
+				</table>
+				<div class="pages" style="margin:20px;float: right; ">{$list->render()}</div>	
+			</div>
+		</div>
+	</form>
+</div>
+{include file="public/_footer" /}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+
+$(function(){
+	$('.skin-minimal input').iCheck({
+		checkboxClass: 'icheckbox-blue',
+		radioClass: 'iradio-blue',
+		increaseArea: '20%'
+	});
+	$("#tab-system").Huitab({
+		index:0
+	});
+});
+// /setting/saveinfo
+function add(){
+	$.post("{:url('manage/exchange')}",$('.form').serialize()).success(function(data){
+		layer.msg(data.msg);
+		if(data.code){
+			setTimeout(function(){
+				location.href = data.url;
+			},500)
+		}
+	});
+	return false;
+}
+function check(id,status,key){
+	layer.confirm('确认'+key+'吗？',function(index){
+		$.post("{:url('check')}",{id:id,status:status}).success(function(data){
+			layer.msg(data.msg,{icon: 6,time:1000});
+			if(data.code){
+				setTimeout(function(){
+					location.href=data.url;
+				},500);
+			}
+		});
+	});
+}
+function ooo(){
+	console.log(123);
+	$.post("{:url('cron/clear')}").success(function(data){
+		layer.msg('清楚成功');
+	});
+	return false;
+}
+</script>
+<!--/请在上方写此页面业务相关的脚本-->
+</body>
+</html>

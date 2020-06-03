@@ -1,0 +1,84 @@
+{include file="public/_meta" /}
+<title>公告列表</title>
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 系统管理 <span class="c-gray en">&gt;</span> 客户留言 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+	<!-- <div class="text-c"> 
+		<input type="text" class="input-text" style="width:250px" placeholder="输入用户名称" id="" name="us_name">
+		<button type="submit" class="btn btn-success" name=""><i class="Hui-iconfont">&#xe665;</i>搜用户</button>
+	</div> -->
+	<div class="cl pd-5 bg-1 bk-gray mt-20">
+	<!-- 	<span class="l">
+			<a href="javascript:;" onclick="create(0,'add','添加新闻')" class="btn btn-primary radius">
+			<i class="Hui-iconfont">&#xe600;</i> 添加新闻</a>
+		</span> --> 
+		<span class="r">共有数据：<strong>{$list->total()}</strong> 条</span> </div>
+	<div class="mt-20">
+	<table class="table table-border table-bordered table-bg">
+		<thead>
+			<tr>
+				<th scope="col" colspan="9">留言列表</th>
+			</tr>
+			<tr class="text-c">
+				<th width="150">添加时间</th>
+				<th width="90">留言</th>
+				<th width="100">操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			{volist name='list' id="vo"}
+			<tr class="text-c">
+				<td>{$vo.add_time}</td>
+				<td>{$vo.content}</td>
+				<td class="td-manage">
+					
+					<a title="删除" onclick="aaa({$vo.id})"><i class="Hui-iconfont">&#xe60b;</i></a> 
+					<a style="text-decoration:none" onclick="edit({$vo.id},'edit','查看')"  title="查看"><i class="Hui-iconfont">&#xe6df;</i></a>
+						
+					<!-- <a style="text-decoration:none" onclick="edit({$vo.id},'see','查看')"  title="查看"><i class="Hui-iconfont">&#xe616;</i></a>	 -->
+				</td>
+			</tr>
+			{/volist}
+		</tbody>
+	</table>
+</div>
+{include file="public/_footer" /}
+
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript" src="/static/admin/lib/My97DatePicker/4.8/WdatePicker.js"></script> 
+<script type="text/javascript" src="/static/admin/lib/datatables/1.10.0/jquery.dataTables.min.js"></script> 
+<script type="text/javascript" src="/static/admin/lib/laypage/1.2/laypage.js"></script>
+<script type="text/javascript">
+ 	function aaa(data){
+        layer.confirm('确定要删除么？', {
+          btn: ['确定', '取消'] //可以无限个按钮
+        }, function(index, layero){
+            $.ajax({
+                type: "post",
+                url: "{:url('del')}",
+                data: {id:data},
+                success: function(data) {
+                    console.log(data);
+                    layer.msg(data.msg);
+                    if(data.code=='1'){
+                        setTimeout(function(){
+                            location.href = data.url;
+                        },1000);
+                    }
+                }
+            });
+            return false;
+    	});
+    }
+     function edit(id,url,key){
+		var url = "{:url('"+url+"')}?id="+id;
+		creatIframe(url,key);
+	}
+	function create(id,url,key){
+		var url = "{:url('"+url+"')}?id="+id;
+		creatIframe(url,key);
+	}
+</script>
+</body>
+</html>

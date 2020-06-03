@@ -1,0 +1,76 @@
+{include file="public/_meta" /}
+<title></title>
+</head>
+<style>
+  #qrcode {
+  width:160px;
+    height:160px;
+    margin-top:15px;
+  }
+  #allCode{
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+  #allCode div{
+    width:300px; 
+    height:300px;
+  }
+</style>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>会员管理 <span class="c-gray en">&gt;</span> 会员列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div id="allCode">
+      <div id="qrcode"></div>
+    </div>
+    
+    
+    <input type="hidden" name="" id="listvalue" value="{$list}">
+{include file="public/_footer" /}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+var nodelist = $("#listvalue").attr("value");
+
+function makeCode () {      
+    //var elText = document.getElementById("text");
+    var elText = eval(nodelist);
+    //alert(elText);   
+    if (!elText) {
+        alert("无法获取链接");
+        elText.focus();
+        return;
+    }
+    var idArr = [];
+    elText.forEach(function(val,index){
+      console.log("####",index);
+      if(index == 0){
+        var qrcode = new QRCode("qrcode");
+        qrcode.makeCode(val);
+      }else{
+        console.log( "!!!!!",idArr[index-1]);
+        var qrcode = new QRCode( idArr[index-1]);
+        qrcode.makeCode(val);
+      }
+      console.log( "!!!!!",index);
+      idArr.push("code"+index);
+      console.log( "!!!!!",idArr);
+      var htmlStr = '<div id="'+"code"+index+'" style></div>';
+      $("#allCode").append(htmlStr);
+    });  
+    console.log(idArr);
+}
+
+makeCode();
+
+/*$("#text").
+on("blur", function () {
+    makeCode();
+}).
+on("keydown", function (e) {
+    if (e.keyCode == 13) {
+        makeCode();
+    }
+});*/	
+</script> 
+</body>
+</html>

@@ -1,0 +1,61 @@
+{include file="public/_meta" /}
+<title></title>
+</head>
+<style>
+  #qrcode {
+      width:150px;
+      text-align: center;
+  }
+  #qrcode button{
+    margin-bottom: 10px;
+    outline: none;
+  }
+  #allCode{
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+  #allCode div{
+    width:300px; 
+    height:300px;
+  }
+</style>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>二维码管理 <span class="c-gray en">&gt;</span> 二维码列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <div id="qrcode">
+      <button onclick="downloadQrcode()">点我下载二维码</button>
+    </div>
+    <input type="hidden" name="" id="listvalue" value="{$list}">
+    <input type="hidden" name="" id="number" value="{$number}">
+{include file="public/_footer" /}
+<!--请在下方写此页面业务相关的脚本-->
+<script type="text/javascript">
+var qrcode = new QRCode(document.getElementById("qrcode"), {
+  width : 150,
+  height : 150
+});
+
+function makeCode () {
+  var number = $("#number").val();    
+  var nodelist = $("#listvalue").val();
+  console.log(nodelist,"====")
+  qrcode.makeCode(nodelist);
+  var htmlStr='<div>'+number+'</div>';
+  $("#qrcode").append(htmlStr);
+}
+makeCode();
+
+function downloadQrcode(){
+  var number = $("#number").val();
+  var qrcode = document.getElementById('qrcode');
+  var img = qrcode.getElementsByTagName('img')[0];
+  var link = document.createElement("a");
+  var url = img.getAttribute("src");
+  link.setAttribute("href",url);
+  link.setAttribute("download",number);
+  link.click();
+}
+</script> 
+</body>
+</html>

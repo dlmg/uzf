@@ -1,0 +1,9 @@
+/.idea
+/.vscode
+/vendor
+*.log
+/thinkphp
+.env
+/public/uploads
+uzf.sql
+/public/phpMyAdmin4.8.5

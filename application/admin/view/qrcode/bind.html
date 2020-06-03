@@ -1,0 +1,122 @@
+{include file="public/_meta" /}
+<title></title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+</head>
+
+<body>
+     <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>二维码管理 <span class="c-gray en">&gt;</span> 二维码绑定 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+    <article class="page-container">
+        <form class="form form-horizontal" id="form-admin-add">
+            <input type="hidden" name="__token__" value="{$Request.token}" />
+             <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>二维码起始编号：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" placeholder="必须为数字" name="first" value = '{$code.code}' id="first" style="width:20%">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>二维码截止编号：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" placeholder="必须为数字" name="last" value = '{$code.code}' id="last" style="width:20%">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>代理商选择框：</label>
+                <div class="formControls col-xs-8 col-sm-9"> 
+                    <span class="select-box" style="width:20%">
+                        <select name="us_id"  class="select">
+                            <option value="">选择代理商</option>
+                            {volist name="users" id="vo"}
+                                <option value="{$vo.id}" >{$vo.us_nickname}</option>
+                            {/volist}
+                        </select>
+                    </span>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>代理商输入框：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" placeholder="代理商姓名" name="ptel" style="width:20%">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2"></label>
+                <div class="formControls col-xs-8 col-sm-9"> 
+                    <span class="select-box" style="width:20%">
+                        <span class="c-red">代理商只需选择填写一处，如果填写两处，以输入框为准</span>
+                    </span>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>产品分类：</label>
+                <div class="formControls col-xs-8 col-sm-9"> 
+                    <span class="select-box" style="width:20%">
+                        <select name="ca_id"  class="select">
+                            <option value="">选择产品分类</option>
+                            {volist name="cates" id="vo"}
+                                <option value="{$vo.id}">{$vo.ca_name}</option>
+                            {/volist}
+                        </select>
+                    </span>
+                </div>
+            </div>  
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>是否覆盖绑定：</label>
+                <div class="formControls col-xs-8 col-sm-9"> 
+                    <span class="select-box" style="width:20%">
+                        <select name="rebind"  class="select">
+                            <option value="">否</option>                          
+                            <option value="1">是</option>                           
+                        </select>
+                    </span>
+                </div>
+            </div>                
+            <div class="row cl">
+                <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                    <input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;绑定&nbsp;&nbsp;" onclick="return add()">
+                </div>
+            </div>
+        </form>
+    </article>
+    {include file="public/_footer"/}
+    <!--请在下方写此页面业务相关的脚本-->
+ 
+    <script type="text/javascript">
+
+    $(function(){
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+        var roles = {$info.role_id|default="1"};
+        $('select[name="role_id"]').val(roles);
+    });
+    function add(){
+        $.post("{:url('doBind')}", $('form').serialize()).success(function(data) {
+            layer.msg(data.msg);
+            if (data.code) {
+                setTimeout(function() {
+                   location.href = "{:url('Bind')}";
+                }, 500);
+            }
+        });
+        return false;
+    }
+    function clear(){
+        $.post("{:url('doClear')}", $('form').serialize()).success(function(data) {
+            layer.msg(data.msg);
+            if (data.code) {
+                setTimeout(function() {
+                   location.href = "{:url('Bind')}";
+                }, 500);
+            }
+        });
+        return false;
+    }
+
+    </script>
+</body>
+
+</html>

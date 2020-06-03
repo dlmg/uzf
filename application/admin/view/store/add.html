@@ -1,0 +1,224 @@
+{include file="public/_meta" /}
+<link href="/static/admin/lib/webuploader/0.1.5/webuploader.css" rel="stylesheet" type="text/css" />
+</head>
+<style>
+
+.lbwxq_mImg {
+    width: 110px;
+    height: 110px;
+    border: 1px solid #eee;
+    position: relative;
+}
+
+.lbwxq_mImg img {
+    width: 110px;
+    height: 110px;
+}
+
+
+.big img{
+    width: 1000px;
+    height: 1000px;
+}
+
+/*大图*/
+
+.lbwxq_lImg {
+    width: 500px;
+    height: 500px;
+    position: absolute;
+    left: 540px;
+    top: 25px;
+    display: none;
+    overflow: hidden;
+}
+
+.lbwxq_lImg img {
+    width: 1000px;
+    height: 1000px;
+}
+
+
+.pic {
+    display: inline-block;
+}
+
+.pic img {
+    width: 110px;
+    height: 110px;
+}
+body,html{
+position: relative;
+}
+.big{
+   position: absolute;
+    right: 25%;
+    top: 120px;
+    width: 300px;
+    height: 300px;
+}
+.big img{
+    width: 100%;
+    height: 100%;
+}
+</style>
+
+<body>
+    <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>门店管理 <span class="c-gray en">&gt;</span> 添加门店 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新"><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+    <div class="page-container">
+        <form class="form form-horizontal" id="form-article-add">
+            <input type="hidden" name="__token__" value="{$Request.token}" />
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>会员账号(手机号)：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" placeholder="所绑定的会员账号" name="us_tel" style="width:20%">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>登录账号(手机号)：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" placeholder="所绑定的后台登录账号" name="ad_tel" style="width:20%">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>门店名称：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" placeholder="门店名称" name="st_name" style="width:20%">
+                </div>
+            </div><div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>门店电话：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <input type="text" class="input-text" placeholder="门店电话" name="st_tel" style="width:20%">
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>所属区域：</label>
+                <div class="formControls col-xs-8 col-sm-9"> 
+                    <span class="select-box" style="width:20%">
+                        <select name="area_id"  class="select">
+                            <option value="">选择所属区域</option>
+                            {volist name="area_list" id="vo"}
+                                <option value="{$vo.id}">{$vo.area_name}</option>
+                            {/volist}
+                        </select>
+                    </span>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>门店地址：</label>
+                <div class="formControls col-xs-8 col-sm-9"> 
+                    
+                        <select class="dropdown" name="province"  id="province" key="city" onchange="loadArea('province',2,'city','{:url('Store/getArea')}');">
+                            <option value="0" selected>省份/直辖市</option>
+                            {volist name="province" id="one"}
+                                <option value="{$one.area_id}">{$one.area_name}</option>
+                            {/volist}
+                        </select>
+                        <select class="dropdown" name="city"   id="city"   onchange="loadArea('city',3,'town','{:url('Store/getArea')}');">
+                            <option value="0">市</option>        
+                        </select>
+                        <select class="dropdown" name="town"   id="town"  >
+                            <option value="0">县</option>
+                        </select>
+                    
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>详细地址：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <textarea type="text"  placeholder="详细地址" name="st_addr_detail" style="width:20%" rows="3" cols="18"></textarea>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2">门店描述：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <textarea type="text"  placeholder="门店描述" name="st_description" style="width:20%" rows="3" cols="18"></textarea>
+                </div>
+            </div>
+            <div class="row cl">
+                <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>门店LOGO：</label>
+                <div class="formControls col-xs-8 col-sm-9">
+                    <div style="width:110px;height: 110px;position: relative;display: inline-block; ">
+                        <img src="/static/admin/img/add0.png" alt="" class="logo" style="position: absolute;left: 0;top: 0;width: 100%;height: 100%;">
+                        <input type="file" name="file" onchange="eee($(this))" class="input-text" style="position: absolute;left: 0;top: 0;width: 100%;height: 100%;opacity: 0;">
+                    </div>
+                </div>
+            </div>
+            <div style="display:none" class="ttt">
+                <input type="text" name="st_logo" value="">
+            </div>
+            <div class="row cl">
+                <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+                    <button onclick="return add();" class="btn btn-primary radius" type="submit"><i class="Hui-iconfont">&#xe632;</i> 确认提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="big" >
+        <!-- <img src="/static/admin/img/add0.png" /> -->
+    </div>
+    {include file="public/_footer" /}
+    <!--请在下方写此页面业务相关的脚本-->
+    <script type="text/javascript">
+    function add() {
+        $.post('{:url("add")}', $('#form-article-add').serialize()).success(function(data) {
+            layer.msg(data.msg);
+            if (data.code) {
+                setTimeout(function() {
+                    location.href = '';
+                }, 1000);
+            }
+        });
+        return false;
+    }
+    function eee(dada) {
+        var data = new FormData();
+        data.append('file', dada[0].files[0]);
+        var index = layer.load(1, { shade: false }); //0代表加载的风格，支持0-2
+        $.ajax({
+            url: '{:url("upload")}',
+            type: 'POST',
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data) {
+                layer.msg(data.msg);
+                if (data.code) {
+                    $('.logo').attr('src',data.data);
+                    $('input[name="st_logo"]').val(data.data);
+                }
+                layer.close(index);
+            },
+            error: function() {
+                layer.close(index);
+                layer.msg('上传出错');
+            }
+        });
+    }
+
+    function loadArea(sel,type_id,selName,url){
+      jQuery("#"+selName+" option").each(function(){
+        jQuery(this).remove();
+      });
+      jQuery("<option value=0>请选择</option>").appendTo(jQuery("#"+selName));
+      if(jQuery("#"+sel).val()==0){
+        return;
+      }
+      jQuery.getJSON(url,{parent_id:jQuery("#"+sel).val(),area_type:type_id},
+        function(data){
+          if(data){
+            jQuery.each(data,function(idx,item){
+              jQuery("<option value="+item.area_id+">"+item.area_name+"</option>").appendTo(jQuery("#"+selName));
+            });
+          }else{
+            jQuery("<option value='0'>请选择</option>").appendTo(jQuery("#"+selName));
+          }
+        }
+      );
+    }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,122 @@
+{include file="public/_meta" /}
+<title></title>
+<style type="text/css">
+    .inp {
+        width: 150px;
+        height: 25px;
+    }
+    .inp:focus {
+        outline:none;
+        border: 1px solid red;
+    }
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>服务管理 <span class="c-gray en">&gt;</span> 竞价列表
+    <!-- <a class="btn btn-success radius r" style="line-height:1.5em;margin-top:3px" href="javascript:void(0);" onclick="downdo()" title="下载" ><i class="Hui-iconfont">&#xe640;</i></a>&nbsp;&nbsp; -->
+    <a class="btn btn-success radius r" style="line-height:1.5em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
+<!--    <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px;margin-right:6px " onclick="excel()" title="导出"><i class="Hui-iconfont">&#xe644;</i></a>-->
+</nav>
+<div class="page-container">
+    <div class="text-c">
+        <form class="Huiform" method="get" action="" target="_self">
+            状态：
+            <span class="select-box inline">
+			<select name="status" class="select">
+				<option value="">全部</option>
+				<option value="1">中标</option>
+				<option value="0" style="color:red;">未中标</option>
+			</select>
+		</span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- 类型：
+            <span class="select-box inline">
+                <select name="gave_status" class="select">
+                    <option value="">全部</option>
+                    <option value="0">会员</option>
+                    <option value="1">审核中</option>
+                    <option value="2">商家</option>
+                </select>
+            </span> -->
+            <input type="hidden" class="input-text"  id="" name="id" value="{$id}">
+            <input type="text" class="input-text" style="width:150px" placeholder="销售次数" id="" name="sales" value="{$Request.get.sales|default=''}">
+            <button type="submit" class="btn btn-success radius" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+
+        <span class="r" style="margin: 10px">共有数据：<strong>{$list->total()}</strong> 条</span> </div>
+    <div class="mt-20">
+        <table class="table table-border  table-hover table-bg table-sort">
+            <thead>
+            <tr class="text-c">
+                <th>服务名称</th>
+                <th>服务底价</th>
+                <th>竞价会员</th>
+                <th>竞价次数</th>
+                <th>销售次数</th>
+                <th>状态</th>
+                <th>竞拍时间</th>
+<!--                <th>操作</th>-->
+            </tr>
+            </thead>
+            <tbody>
+            {volist name='list' id="vo"}
+            <tr class="text-c">
+                <td>{$vo.pd_name}</td>
+                <td>{$vo.pd_price}</td>
+                <td>{$vo.user_id_text}</td>
+                <td>{$vo.times}</td>
+                <td>{$vo.sales}</td>
+                <td class="td-status">
+                    {if condition="$vo.status eq 1"}
+                   <span class="label label-success radius">中标</span>
+                    {else/}
+                   <span class="label label-default radius">未中标</span>
+                    {/if}
+                </td>
+                <td>{$vo.add_time}</td>
+<!--                <td class="td-manage">-->
+<!--                    <a style="text-decoration:none" onclick="del({$vo.id})" title="删除"><i class="Hui-iconfont">&#xe706;</i></a>-->
+<!--                </td>-->
+            </tr>
+            {/volist}
+            </tbody>
+        </table>
+        <div class="pages" style="margin:20px;float: right; ">{$list|raw}</div>
+    </div>
+    {include file="public/_footer" /}
+    <!--请在下方写此页面业务相关的脚本-->
+    <script type="text/javascript">
+        $('select[name="status"]').val({$Request.get.status});
+        $('select[name="sales"]').val({$Request.get.sales});
+
+
+        function create(id,url,key){
+            var url = "{:url('"+url+"')}?id="+id;
+            creatIframe(url,key);
+        }
+
+        function del(id){
+            layer.confirm('确定要删除么？', {
+                btn: ['确定', '取消']
+            }, function(index, layero){
+                $.ajax({
+                    type: "post",
+                    url: "{:url('delete')}",
+                    data: {id:id},
+                    success: function(data) {
+                        layer.msg(data.msg);
+                        setTimeout("window.location=\"{:url('User/index')}\"",500);
+                    }
+                });
+            });
+        }
+
+        function excel(){
+            var url = "{:url('excel')}";
+            creatIframe(url,'表格导出');
+        }
+    </script>
+</body>
+</html>

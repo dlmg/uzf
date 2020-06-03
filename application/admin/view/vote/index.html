@@ -1,0 +1,84 @@
+{include file="public/_meta" /}
+<title></title>
+<style type="text/css">
+    .inp {
+        width: 150px;
+        height: 25px;
+    }
+    .inp:focus {
+        outline:none;
+        border: 1px solid red;
+    }
+</style>
+</head>
+<body>
+<nav class="breadcrumb">
+    <i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>投票管理 <span class="c-gray en">&gt;</span> 投票列表
+    <!-- <a class="btn btn-success radius r" style="line-height:1.5em;margin-top:3px" href="javascript:void(0);" onclick="downdo()" title="下载" ><i class="Hui-iconfont">&#xe640;</i></a>&nbsp;&nbsp; -->
+    <a class="btn btn-success radius r" style="line-height:1.5em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
+    <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px;margin-right:6px " onclick="excel()" title="导出"><i class="Hui-iconfont">&#xe644;</i></a>
+</nav>
+<div class="page-container">
+    <div class="text-c">
+        <form class="Huiform" method="get" action="" target="_self">
+            &nbsp;&nbsp;&nbsp;
+            <input type="text" class="input-text" style="width:150px" placeholder="投票主题" id="" name="keywords" value="{$Request.get.keywords|default=''}">
+            <button type="submit" class="btn btn-success radius" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜索</button>
+        </form>
+    </div>
+    <div class="cl pd-5 bg-1 bk-gray mt-20">
+
+        <span class="r" style="margin: 10px">共有数据：<strong>{$list->total()}</strong> 条</span> </div>
+    <div class="mt-20">
+        <table class="table table-border  table-hover table-bg table-sort">
+            <thead>
+            <tr class="text-c">
+                <th>投票主题</th>
+                <th>投票类型</th>
+                <th>发起人</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>参与人数</th>
+                <th>投票结果</th>
+            </tr>
+            </thead>
+            <tbody>
+            {volist name='list' id="vo"}
+            <tr class="text-c">
+                <td>{$vo.name}</td>
+                {if condition="$vo.type == 1"}
+                <td>发布道具卡、奖励</td>
+                {elseif condition="$vo.type == 2"}
+                <td>系统功能管理</td>
+                {elseif condition="$vo.type == 3"}
+                <td>选举超级节点</td>
+                {/if}
+                <td>{$vo.user_name}</td>
+                <td>{$vo.add_time}</td>
+                <td>{$vo.end_time}</td>
+                <td>{$vo.person_num}</td>
+                {if condition="$vo.status==-1"}
+                <td><span class="label label-warning">未通过</span></td>
+                {elseif condition="$vo.status==2"}
+                <td><span class="label label-primary">进行中</span></td>
+                {elseif condition="$vo.status==0"}
+                <td><span class="label label-info">未开始</span></td>
+                {elseif condition="$vo.status==1"}
+                <td><span class="label label-success">已通过</span></td>
+                {/if}
+            </tr>
+            {/volist}
+            </tbody>
+        </table>
+        <div class="pages" style="margin:20px;float: right; ">{$list|raw}</div>
+    </div>
+    {include file="public/_footer" /}
+    <!--请在下方写此页面业务相关的脚本-->
+    <script type="text/javascript">
+        function excel(){
+            var url = "{:url('excel')}";
+            creatIframe(url,'表格导出');
+        }
+    </script>
+</body>
+</html>
