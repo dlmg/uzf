@@ -72,13 +72,12 @@ class User extends Basis
         $this->s_msg(null, $code);
     }
 
-    /*public function myAccount()
+    public function myAccount()
     {
         $user_id = $this->user['id'];
         $result = Db::name('money')->where('user_id', $user_id)->order('coin_id','asc')->select();
-        dump($result);
-//      $this->s_msg(null,$info);
-    }*/
+        $this->s_msg(null,$result);
+    }
 
     /**
      * 商户申请
@@ -124,7 +123,11 @@ class User extends Basis
      */
     public function myWallet()
     {
-        $data = Db::name('wallet')->where('us_id',$this->user['id'])->paginate(10);
+        $type = input('wa_type');
+        $data = Db::name('wallet')->where('us_id',$this->user['id'])->where('wa_type',$type)->paginate(10);
+        if($data->isEmpty()){
+            $this->e_msg('暂无记录~');
+        }
         $this->s_msg('null',$data);
     }
 
