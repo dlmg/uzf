@@ -8,6 +8,7 @@ use app\index\controller\Wecpay;
 use think\Container;
 use think\Db;
 use app\common\logic\ProductLogic;
+
 /**
  * 图片验证码
  */
@@ -21,28 +22,27 @@ class Every extends Common
         $this->wechant_numb = Config::get('wechat_numb');
     }
 
-    /**
-     * 通过经纬度计算两点距离
-     * @param $lat1
-     * @param $lng1
-     * @param $lat2
-     * @param $lng2
-     * @create_time: 2020/6/3 16:04:59
-     * @author: wcg
-     */
-    public function test($lat1,$lng1,$lat2,$lng2)
+    //通过经纬度计算两点距离
+    public function test($lat1, $lng1, $lat2, $lng2)
     {
         $earthRadius = 6378.137;
-        $lat1 = ($lat1 * M_PI ) / 180;
-        $lng1 = ($lng1 * M_PI ) / 180;
-        $lat2 = ($lat2 * M_PI ) / 180;
-        $lng2 = ($lng2 * M_PI ) / 180;
+        $lat1 = ($lat1 * M_PI) / 180;
+        $lng1 = ($lng1 * M_PI) / 180;
+        $lat2 = ($lat2 * M_PI) / 180;
+        $lng2 = ($lng2 * M_PI) / 180;
         $calcLongitude = $lng2 - $lng1;
         $calcLatitude = $lat2 - $lat1;
         $stepOne = pow(sin($calcLatitude / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($calcLongitude / 2), 2);
         $stepTwo = 2 * asin(min(1, sqrt($stepOne)));
         $calculatedDistance = $earthRadius * $stepTwo;
-        dump($calculatedDistance);
+        return intval($calculatedDistance * 1000) . '米';
+    }
+
+    public function test1()
+    {
+        $result = Db::table('uzf_user')->fetchSql(true)->where('us_nickname&id&us_tel','>',0)->select();
+        dump($result);
+
     }
 
     /**
@@ -223,7 +223,7 @@ class Every extends Common
     }
 
     //检查验证码
-    public function check_code($us_tel,$code)
+    public function check_code($us_tel, $code)
     {
         $code_info = cache($us_tel . 'code') ?: "";
         if (!$code_info) {
@@ -231,7 +231,7 @@ class Every extends Common
         } elseif (trim($code) != $code_info) {
             $this->e_msg('验证码不正确');
         }
-        $this->s_msg('验证码正确',$code);
+        $this->s_msg('验证码正确', $code);
     }
 
     //获取openid
@@ -286,7 +286,7 @@ class Every extends Common
     //判断手机号是否存在
     public function exist($mobile)
     {
-        $info = model('User')->detail(['us_tel' => $mobile,'us_delete_status'=>1], 'id');
+        $info = model('User')->detail(['us_tel' => $mobile, 'us_delete_status' => 1], 'id');
         if (!$mobile || !$info) {
             $this->e_msg('账号不存在');
         }
@@ -294,19 +294,20 @@ class Every extends Common
     }
 
     //登录
-    public function login(){
+    public function login()
+    {
         $data = input('post.');
         //验证账号是否存在
         $this->exist($data['us_tel']);
         $userlogic = new UserLogic;
         $tag = $userlogic->login($data);
-        if($tag == -1){
+        if ($tag == -1) {
             $this->e_msg('账号被冻结');
-        }elseif($tag == -2){
+        } elseif ($tag == -2) {
             $this->e_msg('账号未激活');
-        }elseif($tag == -3){
+        } elseif ($tag == -3) {
             $this->e_msg('密码错误');
         }
-        $this->s_msg('登录成功',$tag);
+        $this->s_msg('登录成功', $tag);
     }
 }

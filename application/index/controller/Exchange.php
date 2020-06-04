@@ -25,7 +25,7 @@ class Exchange extends Basis
      * @create_time: 2020/5/29 10:01:07
      * @author: wcg
      */
-    public function transaction($tag = 1, $coin_name = 'AGB')
+    public function transaction($tag = 1, $coin_id = 1)
     {
         if ($tag == 1) {
             $map['tag'] = 2;
@@ -36,7 +36,7 @@ class Exchange extends Basis
         }
         $result = Db::name('publish')
             ->where($map)
-            ->where('coin_name', $coin_name)
+            ->where('coin_id', $coin_id)
             ->paginate(10);
         if ($result->isEmpty()) {
             $this->e_msg('暂无数据');
