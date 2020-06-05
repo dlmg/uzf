@@ -1,4 +1,4 @@
-<?php /*a:5:{s:68:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\index\index.html";i:1585357859;s:69:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_meta.html";i:1530329594;s:71:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_header.html";i:1585374624;s:69:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_menu.html";i:1591320023;s:71:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_footer.html";i:1530790558;}*/ ?>
+<?php /*a:5:{s:68:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\index\index.html";i:1585357859;s:69:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_meta.html";i:1530329594;s:71:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_header.html";i:1585374624;s:69:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_menu.html";i:1591339609;s:71:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_footer.html";i:1530790558;}*/ ?>
 ﻿<!DOCTYPE HTML>
 <html>
 <head>
@@ -86,6 +86,7 @@
 				</ul>
 				<ul>
 					<li data-node-id="15" class="rule_node"><a data-href="<?php echo url('User/apply'); ?>" data-title="商户申请列表" href="javascript:void(0)">商户申请列表</a></li>
+					<li data-node-id="57" class="rule_node"><a data-href="<?php echo url('User/checkList'); ?>" data-title="认证审核" href="javascript:void(0)">认证待审核列表</a></li>
 				</ul>
 			</dd>
 		</dl>

@@ -34,20 +34,20 @@ class Site extends Controller
                     if ($result['total'] > $result['need'] || $result['total'] == $result['need']) {
                         $canyu = Db::name('voting')->where('v_id', $id)->column('user_id');
                         foreach ($canyu as $item) {
-                            Db::name('money')->where('user_id', $item)->setDec('lock_money', $need);
-                            $insertData = ['us_id'=>$item,'wa_num'=>$need,'wa_type'=>1,'wa_note'=>'投票消耗','add_time'=>date('Y-m-d H:i:s')];
+                            Db::name('money')->where('user_id', $item)->where('coin_name','UZF')->setDec('lock_money', $need);
+                            $insertData = ['us_id'=>$item,'wa_num'=>$need,'wa_type'=>2,'wa_note'=>'投票消耗','add_time'=>date('Y-m-d H:i:s')];
                             Db::name('wallet')->insert($insertData);
                         }
-                        Db::name('money')->where('user_id', $result['user_id'])->setInc('money', $result['total']);
-                        Db::name('wallet')->data(['us_id'=>$result['user_id'],'wa_num'=>$result['total'],'wa_type'=>1,'wa_note'=>'投票所获收益','add_time'=>date('Y-m-d H:i:s')])->insert();
+                        Db::name('money')->where('user_id', $result['user_id'])->where('coin_name','UZF')->setInc('money', $result['total']);
+                        Db::name('wallet')->data(['us_id'=>$result['user_id'],'wa_num'=>$result['total'],'wa_type'=>2,'wa_note'=>'投票所获收益','add_time'=>date('Y-m-d H:i:s')])->insert();
                         Db::name('vote')->where('id', $id)->setField('status', 1);
                         unset($canyu);
                     } elseif ($result['total'] < $result['need']) {
                         //如果总票数小于需要资金，则把参与用户的冻结金额释放到自己的余额
-                        $canyu = Db::name('voting')->where('v_id', $id)->column('user_id');
+                        $canyu = Db::name('voting')->where('v_id', $id)->where('coin_name','UZF')->column('user_id');
                         foreach ($canyu as $item) {
-                            Db::name('money')->where('user_id', $item)->setDec('lock_money', $need);
-                            Db::name('money')->where('user_id', $item)->setInc('money', $need);
+                            Db::name('money')->where('user_id', $item)->where('coin_name','UZF')->setDec('lock_money', $need);
+                            Db::name('money')->where('user_id', $item)->where('coin_name','UZF')->setInc('money', $need);
                         }
                         Db::name('vote')->where('id', $id)->setField('status', -1);
                         unset($canyu);

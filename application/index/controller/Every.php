@@ -40,8 +40,13 @@ class Every extends Common
 
     public function test1()
     {
-        $result = Db::table('uzf_user')->fetchSql(true)->where('us_nickname&id&us_tel','>',0)->select();
-        dump($result);
+        /*$result = Db::table('uzf_user')->fetchSql(true)->where('us_nickname&id&us_tel','>',0)->select();
+        dump($result);*/
+        $map[] = ['id','=',19];
+        $data = ['us_card_status'=>2];
+        $info = model('User')->where($map)->update($data);
+        dump($info);
+
 
     }
 

@@ -748,7 +748,12 @@ class User extends Common
         exit;
     }
 
-    //升降级
+    /**
+     * 升降级
+     * @return \think\response\Json
+     * @create_time: 2020/6/5 11:07:31
+     * @author: wcg
+     */
     public function rank()
     {
         $user = new UserLogic;
@@ -757,5 +762,49 @@ class User extends Common
             return json(['msg' => '操作成功！']);
         else
             return json(['msg'=>'操作失败']);
+    }
+
+    /**
+     * 认证待审核列表
+     * @return mixed
+     * @create_time: 2020/6/5 14:54:02
+     * @author: wcg
+     */
+    public function checkList(){
+        if (input('get.keywords')) {
+            $this->map[] = ['us_tel|us_account|us_nickname', 'like', '%'.input('get.keywords').'%'];
+        }
+        $this->map[] = ['us_card_status','=',1];
+        $field = "id,us_account,us_nickname,us_tel,us_id_card,us_realname";
+        $result = model('User')->getList($this->map,$this->order,$this->size,$field);
+        $this->assign('list',$result);
+        return $this->fetch();
+    }
+
+
+    public function authDetail(){
+        if(request()->isGet()){
+            $id = input('id');
+            $result = model('User')->getInfo($id);
+            $this->assign('info',$result);
+            return $this->fetch();
+        }elseif(request()->isPost()){
+            $id = input('id');
+            $tag = input('tag');
+            $map[] = ['id','=',$id];
+            if($tag == 'pass'){
+                $data = ['us_card_status'=>2];
+            }elseif($tag == 'out'){
+                $data = ['us_card_status'=>0];
+            }else{
+                return json(['code'=>203,'msg'=>'传递参数错误']);
+            }
+            $info = model('User')->updateInfo($map,$data);
+            if($info){
+                return json(['code'=>200,'msg'=>'操作成功']);
+            }else{
+                return json(['code'=>201,'msg'=>"未知错误"]);
+            }
+        }
     }
 }

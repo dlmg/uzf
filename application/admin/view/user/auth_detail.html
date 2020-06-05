@@ -1,0 +1,108 @@
+{include file="public/_meta" /}
+<link href="/static/admin/lib/webuploader/0.1.5/webuploader.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>会员管理 <span class="c-gray en">&gt;</span> 会员详情 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <form action="" method="post" class="form form-horizontal" id="form-article-add">
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">ID：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <p type="text" class="input-text"  style="width:24%">{$info['id']}</p>
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">手机号码：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <p type="text" class="input-text" style="width:24%">{$info['us_tel']}</p>
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">姓名：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <p type="text" class="input-text" style="width:24%">{$info['us_realname']}</p>
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">身份证号：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <p type="text" class="input-text" style="width:24%">{$info['us_id_card']}</p>
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">身份证正面：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <div style="width:300px;height: 188px;position: relative;display: inline-block; ">
+                    {if condition="$info.us_card_front_pic"}
+                    <img src="{$info.us_card_front_pic}" class="logo" style="position: absolute;left: 0;top: 0;width: 100%;height: 100%;">
+                    {else}
+                    <img src="/static/admin/img/add1.png" class="logo" style="position: absolute;left: 0;top: 0;width: 100%;height: 100%;">
+                    {/if}
+                </div>
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">身份证背面：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <div style="width:300px;height: 188px;position: relative;display: inline-block; ">
+                    {if condition="$info.us_card_reverse_pic"}
+                    <img src="{$info.us_card_reverse_pic}" class="logo" style="position: absolute;left: 0;top: 0;width: 100%;height: 100%;">
+                    {else}
+                    <img src="/static/admin/img/add1.png" class="logo" style="position: absolute;left: 0;top: 0;width: 100%;height: 100%;">
+                    {/if}
+                </div>
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-2">手持身份证：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <div style="width:300px;height: 188px;position: relative;display: inline-block; ">
+                    {if condition="$info.us_handheld_pic"}
+                    <img src="{$info.us_handheld_pic}" class="logo" style="position: absolute;left: 0;top: 0;width: 100%;height: 100%;">
+                    {else}
+                    <img src="/static/admin/img/add1.png" class="logo" style="position: absolute;left: 0;top: 0;width: 100%;height: 100%;">
+                    {/if}                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+                <button onclick="check({$info['id']},'pass');" class="btn btn-primary radius" type="button">
+                    审核通过
+                </button><!--  -->&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button onclick="check({$info['id']},'out');" class="btn btn-primary radius" type="button">
+                    审核驳回
+                </button><!--  -->
+            </div>
+        </div>
+    </form>
+</div>
+
+{include file="public/_footer" /}
+
+<!--请在下方写此页面业务相关的脚本-->
+
+<script type="text/javascript">
+    function check(id,tag){
+        $.ajax({
+            type: "post",
+            url: "{:url('admin/user/authDetail')}",
+            data: {id:id,tag:tag},
+            success: function(data) {
+                if(data.code=200){
+                    layer.msg(data.msg, {
+                        time: 1000
+                    }, function () {
+                        window.location.href = 'checkList';
+                    })
+                }
+            }
+        })
+    }
+
+</script>
+</body>
+</html>

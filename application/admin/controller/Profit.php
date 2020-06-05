@@ -21,7 +21,6 @@ class Profit extends Common
     public function index()
     {
         if (is_post()) {
-
             $rst = model('Wallet')->xiugai([input('post.key') => input('post.value')], ['id' => input('post.id')]);
             return $rst;
         }
