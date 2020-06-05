@@ -96,8 +96,8 @@ class Wallet extends Model
     }
     public function getWaTypeTextAttr($value, $data) {
         $array = [
-            1 => 'UZF',
-            2 => 'AGB',
+            1 => 'AGB',
+            2 => 'UZF',
             3 => 'BTB',
             4 => '其他',
         ];

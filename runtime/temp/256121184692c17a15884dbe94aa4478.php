@@ -1,4 +1,4 @@
-<?php /*a:5:{s:68:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\index\index.html";i:1585357859;s:69:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_meta.html";i:1530329594;s:71:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_header.html";i:1585374624;s:69:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_menu.html";i:1588903314;s:71:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_footer.html";i:1530790558;}*/ ?>
+<?php /*a:5:{s:68:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\index\index.html";i:1585357859;s:69:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_meta.html";i:1530329594;s:71:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_header.html";i:1585374624;s:69:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_menu.html";i:1591320023;s:71:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_footer.html";i:1530790558;}*/ ?>
 ﻿<!DOCTYPE HTML>
 <html>
 <head>
@@ -130,9 +130,6 @@
 				<ul>
 					<li data-node-id="54" class="rule_node"><a data-href="<?php echo url('Tools/index'); ?>" data-title="道具列表" href="javascript:void(0)">道具列表</a></li>
 				</ul>
-				<!--<ul>
-					<li data-node-id="55" class="rule_node"><a data-href="<?php echo url('Vote/vote'); ?>" data-title="发布道具" href="javascript:void(0)">发起投票</a></li>
-				</ul>-->
 			</dd>
 		</dl>
 
@@ -144,6 +141,7 @@
 <!--					<li data-node-id="43" class="rule_node"><a data-href="<?php echo url('profit/commission'); ?>" data-title="提现审核" href="javascript:void(0)">提现审核</a></li>-->
 <!--					<li data-node-id="53" class="rule_node"><a data-href="<?php echo url('profit/commissionrecord'); ?>" data-title="提现记录" href="javascript:void(0)">提现记录</a></li>-->
 					<li data-node-id="54" class="rule_node"><a data-href="<?php echo url('profit/birecord'); ?>" data-title="财务明细" href="javascript:void(0)">财务明细</a></li>
+					<li data-node-id="56" class="rule_node"><a data-href="<?php echo url('profit/fb'); ?>" data-title="法币交易" href="javascript:void(0)">法币交易</a></li>
 				</ul>
 			</dd>
 		</dl>

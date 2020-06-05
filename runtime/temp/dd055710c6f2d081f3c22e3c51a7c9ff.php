@@ -1,4 +1,4 @@
-<?php /*a:3:{s:72:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\profit\birecord.html";i:1587438088;s:69:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_meta.html";i:1530329594;s:71:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_footer.html";i:1530790558;}*/ ?>
+<?php /*a:3:{s:72:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\profit\birecord.html";i:1591320412;s:69:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_meta.html";i:1530329594;s:71:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_footer.html";i:1530790558;}*/ ?>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -45,8 +45,8 @@
                 <span class="select-box inline">
                     <select name="wa_type" class="select">
                                 <option value=""  >全部</option>
-                                <option value="1" >UZF</option>
-                                <option value="2" >AGB</option>
+                                <option value="1" >AGB</option>
+                                <option value="2" >UZF</option>
                                 <option value="3" >BTB</option>
                                 <option value="4" >其他</option>
                     </select>
