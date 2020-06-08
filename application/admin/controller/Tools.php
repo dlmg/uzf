@@ -26,10 +26,14 @@ class Tools extends Common
             $this->map[] = ['name', 'like', '%' . input('keywords') . '%'];
         }
         $list = $tools->getList($this->map, $this->order, $this->size);
+        if(!$list){
+            return '暂无数据';
+        }
         $this->assign('list', $list);
         return $this->fetch();
     }
 
+    //更改道具的状态
     public function change()
     {
         $value = input('value');
@@ -41,6 +45,7 @@ class Tools extends Common
             return json(['code' => 2, 'msg' => '修改失败']);
     }
 
+    //发布道具
     public function add()
     {
         if (request()->isGet()) {
@@ -73,6 +78,23 @@ class Tools extends Common
                 'msg' => $file->getError(),
                 'code' => 0,
             );
+        }
+    }
+
+    public function edit(){
+        if(request()->isGet()){
+            $id = input('id');
+            $data = Db::name('tools')->where('id',$id)->find();
+            $this->assign('data',$data);
+            return $this->fetch();
+        }elseif(request()->isPost()){
+            $data = input('post.');
+            $info = model('Tools')->where('id',$data['id'])->update($data);
+            if($info){
+                return json(['code'=>200,'msg'=>'修改成功']);
+            }else{
+                return json(['code'=>201,'msg'=>'你没有做出修改']);
+            }
         }
     }
 }

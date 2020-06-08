@@ -38,15 +38,8 @@ class Every extends Common
         return intval($calculatedDistance * 1000) . '米';
     }
 
-    public function test1()
+    public function test1($base64)
     {
-        /*$result = Db::table('uzf_user')->fetchSql(true)->where('us_nickname&id&us_tel','>',0)->select();
-        dump($result);*/
-        $map[] = ['id','=',19];
-        $data = ['us_card_status'=>2];
-        $info = model('User')->where($map)->update($data);
-        dump($info);
-
 
     }
 

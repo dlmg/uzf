@@ -1,22 +1,10 @@
 {include file="public/_meta" /}
 <title></title>
-<style type="text/css">
-    .inp {
-        width: 150px;
-        height: 25px;
-    }
-    .inp:focus {
-        outline:none;
-        border: 1px solid red;
-    }
-</style>
 </head>
 <body>
 <nav class="breadcrumb">
     <i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>会员管理 <span class="c-gray en">&gt;</span> 认证审核
-    <!-- <a class="btn btn-success radius r" style="line-height:1.5em;margin-top:3px" href="javascript:void(0);" onclick="downdo()" title="下载" ><i class="Hui-iconfont">&#xe640;</i></a>&nbsp;&nbsp; -->
     <a class="btn btn-success radius r" style="line-height:1.5em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
-    <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px;margin-right:6px " onclick="excel()" title="导出"><i class="Hui-iconfont">&#xe644;</i></a>
 </nav>
 <div class="page-container">
     <div class="text-c">
@@ -49,7 +37,6 @@
                 <td>{$vo.us_id_card}</td>
                 <td class="td-manage">
                     <a title="编辑" href="javascript:;" onclick="create({$vo.id},'authDetail','认证详情')" class="ml-5" style="text-decoration:none">查看详情</a>
-                    <!--<a style="text-decoration:none" onclick="del({$vo.id})" title="删除"><i class="Hui-iconfont">&#xe706;</i></a>-->
                 </td>
             </tr>
             {/volist}

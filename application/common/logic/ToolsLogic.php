@@ -30,9 +30,6 @@ class ToolsLogic
             $map = '1 = 1';
         $tools = new Tools;
         $list = $tools->where($map)->order($order)->paginate($size, false, ['query' => request()->param()]);
-        if (count($list) <= 0) {
-            return null;
-        }
         foreach ($list as $key => $v) {
             $v['picture'] = explode(',', $v['picture'])[0];
         }

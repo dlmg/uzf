@@ -71,7 +71,7 @@ class Verify extends Validate
         'bank_account|银行卡账号' => 'require',
 
         //申请成为商家
-        'us_id_card|身份证号' => 'require',
+        'us_id_card|身份证号' => 'require|idCard',
         'us_name|真实姓名' => 'require',
         'us_apply_addr|所在地区' => 'require',
         'us_apply_tel|联系电话' => 'require',
@@ -101,6 +101,12 @@ class Verify extends Validate
         'category' => 'require',
         'price' => 'require|number',
         'picture' => 'require',
+
+        //身份认证
+        'us_realname|姓名' => 'require|chs',
+        'us_card_front_pic|身份证正面' => 'require',
+        'us_card_reverse_pic|身份证反面' => 'require',
+        'us_handheld_pic|手持身份证' => 'require',
     ];
     protected $field = [
         'ad_account' => '管理员账户',
@@ -171,6 +177,7 @@ class Verify extends Validate
         'addBid'=>['pd_id'],//竞价B
         'vote' => ['name','add_time','end_time','type','need'],//发布投票
         'addTools' => ['name','category','picture','price'],//添加道具
+        'auth' => ['us_realname','us_id_card','us_card_front_pic','us_card_reverse_pic','us_handheld_pic'],
     ];
 
 }

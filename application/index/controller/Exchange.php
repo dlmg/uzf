@@ -73,14 +73,14 @@ class Exchange extends Basis
             $data['payment'] = implode(',', $data['payment']);
             $data['add_time'] = date('Y-m-d H:i:s');
 
-            if ($data['coin_name'] != 'UZF' && $data['coin_name'] != 'AGB') {
+            if ($data['coin_id'] != 1 && $data['coin_name'] != 2) {
                 $this->e_msg('参数传递错误');
             }
 
             if ($data['tag'] == 1) {
                 $available = Db::name('money')
                     ->where('user_id', $user_id)
-                    ->where('coin_name', $data['coin_name'])
+                    ->where('coin_id', $data['coin_id'])
                     ->value('money');
                 if ($available < $data['number']) {
                     $this->e_msg('超过了可用余额');
@@ -91,7 +91,7 @@ class Exchange extends Basis
                     $result = Db::name('publish')->insertGetId($data);
                     $info = Db::name('money')
                         ->where('user_id', $user_id)
-                        ->where('coin_name', $data['coin_name'])
+                        ->where('coin_id', $data['coin_id'])
                         ->update([
                             'money' => Db::raw("money-($number+$number*0.005)"),
                             'lock_money' => Db::raw("lock_money+($number)")
@@ -171,7 +171,7 @@ class Exchange extends Basis
         $data['number'] = input('buy_num');
         $data['amount'] = input('buy_price');
         $data['add_time'] = date('Y-m-d H:i:s');
-        $data['coin_name'] = input('coin_name');
+        $data['coin_id'] = input('coin_id');
         $data['or_num'] = date('YmdHis') . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
         $data['reference'] = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
         Db::startTrans();
@@ -210,15 +210,15 @@ class Exchange extends Basis
         $data['number'] = input('buy_num');
         $data['amount'] = input('buy_price');
         $data['add_time'] = date('Y-m-d H:i:s');
-        $data['coin_name'] = input('coin_name');
+        $data['coin_id'] = input('coin_id');
         $data['or_num'] = date('YmdHis') . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
         $data['reference'] = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
-        $coin_name = input('coin_name');
+        $coin_name = Db::name('coin')->where('id',$data['coin_id'])->value('name');
 
         $number = $data['number'];
         $money = Db::name('money')
             ->where('user_id', $this->user['id'])
-            ->where('coin_name', $coin_name)
+            ->where('coin_id', $data['coin_id'])
             ->value('money');
         if ($money < $data['number']) {
             $this->e_msg('你的' . $coin_name . '数量不足');
@@ -231,7 +231,7 @@ class Exchange extends Basis
 
             Db::name('money')
                 ->where('user_id', $data['from_id'])
-                ->where('coin_name', $coin_name)
+                ->where('coin_id', $data['coin_id'])
                 ->update([
                     'money' => Db::raw("money-$number"),
                     'lock_money' => Db::raw("lock_money+$number")
@@ -260,13 +260,28 @@ class Exchange extends Basis
      * @create_time: 2020/5/30 16:09:03
      * @author: wcg
      */
-    public function cancleBuy()
+    public function cancleOrder()
     {
         $id = input('id');
-        $number = input('number');
-        $pu_id = Db::name('ex_order')->where('id', $id)->value('pu_id');
-        Db::name('ex_order')->where('id', $id)->setField('status', 2);            //修改订单状态为已取消
-        Db::name('publish')->where('id', $pu_id)->setInc('number', $number);      //把所属挂单的数量恢复
+        $data = Db::name('ex_order')->where('id',$id)->find();
+        $tag = Db::name('publish')->where('id',$data['pu_id'])->value('tag');
+        $number = $data['number'];
+        Db::startTrans();
+        try{
+            Db::name('ex_order')->where('id', $id)->setField('status', 2);            //修改订单状态为已取消
+            Db::name('publish')->where('id', $data['pu_id'])->setInc('number', $data['number']);      //把所属挂单的数量恢复
+            if($tag == 2){
+                Db::name('money')->where('user_id',$data['from_id'])->where('coin_id',$data['coin_id'])->update(['lock_money'=>"lock_money-$number",'money'=>"money+$number"]);
+            }
+            Db::commit();
+            return $this->s_msg(null,'取消成功');
+        }catch(\Exception $e){
+            Db::rollback();
+            return $this->e_msg($e->getMessage());
+        }
+
+
+
         $this->s_msg('取消成功');
     }
 

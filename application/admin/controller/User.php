@@ -781,7 +781,12 @@ class User extends Common
         return $this->fetch();
     }
 
-
+    /**
+     * GET 审核详情    POST 审核通过/拒绝
+     * @return mixed|\think\response\Json
+     * @create_time: 2020/6/5 16:38:26
+     * @author: wcg
+     */
     public function authDetail(){
         if(request()->isGet()){
             $id = input('id');

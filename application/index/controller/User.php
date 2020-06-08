@@ -7,7 +7,6 @@ use think\Db;
 
 class User extends Basis
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -54,15 +53,15 @@ class User extends Basis
         if (!$code) {
             $this->e_msg('用户没有登录');
         }
-        // $code = encrypt($id);
+        //$code = encrypt($id);
         $this->s_msg(null, $code);
     }
 
     public function myAccount()
     {
         $user_id = $this->user['id'];
-        $result = Db::name('money')->where('user_id', $user_id)->order('coin_id','asc')->select();
-        $this->s_msg(null,$result);
+        $result = Db::name('money')->where('user_id', $user_id)->order('coin_id', 'asc')->select();
+        $this->s_msg(null, $result);
     }
 
     /**
@@ -110,11 +109,11 @@ class User extends Basis
     public function myWallet()
     {
         $type = input('wa_type');
-        $data = Db::name('wallet')->where('us_id',$this->user['id'])->where('wa_type',$type)->paginate(10);
-        if($data->isEmpty()){
+        $data = Db::name('wallet')->where('us_id', $this->user['id'])->where('wa_type', $type)->paginate(10);
+        if ($data->isEmpty()) {
             $this->e_msg('暂无记录~');
         }
-        $this->s_msg('null',$data);
+        $this->s_msg('null', $data);
     }
 
     /**
@@ -126,12 +125,13 @@ class User extends Basis
      * @create_time: 2020/5/26 16:42:09
      * @author: wcg
      */
-    public function levelList($level=''){
-        if(!$level){
+    public function levelList($level = '')
+    {
+        if (!$level) {
             $this->e_msg('参数错误');
         }
-        $data = Db::name('user')->where('us_type',1)->where('us_level',$level)->order('us_recommend','desc')->order('us_add_time','desc')->field('us_head_pic,us_nickname,us_recommend')->select();
-        $this->s_msg('null',$data);
+        $data = Db::name('user')->where('us_type', 1)->where('us_level', $level)->order('us_recommend', 'desc')->order('us_add_time', 'desc')->field('us_head_pic,us_nickname,us_recommend')->select();
+        $this->s_msg('null', $data);
     }
 
 
@@ -143,9 +143,6 @@ class User extends Basis
         if (count($banks) == 0) {
             $this->e_msg('你没有银行卡');
         }
-        //$data['us_shop_bi'] = $this->user['us_shop_bi'];
-        // $data['us_all_get'] = $this->user['us_all_get'];
-        // $data['tixian'] = $tixian;
         $this->s_msg(null, $banks);
     }
 
@@ -582,7 +579,7 @@ class User extends Basis
     }
 
     /**
-     * 通过申请
+     * 通过申请   merchant商家申请   product服务（商品申请）
      * @create_time: 2020/5/19 11:47:41
      * @author: wcg
      */
@@ -590,15 +587,98 @@ class User extends Basis
     {
         $tag = input('tag');
         $id = input('id');
+
         if ($tag == 'merchant') {
             $date = date('Y-m-d H:i:s');
-            model('Apply')->where('id', $id)->update(['setting_time' => $date, 'status' => 2]);
+            model('Apply')->where('id', $id)->update(['setting_time' => $date, 'status' => $this->user['us_type'] - 1]);
+            unset($data);
             $this->s_msg('操作成功');
         } elseif ($tag == 'product') {
-            model('Product')->where('id', $id)->update(['st_status' => 2]);
+            model('Product')->where('id', $id)->update(['st_status' => $this->user['us_type'] - 1]);
             $this->s_msg('操作成功');
         }
         $this->e_msg('传递参数有误');
     }
+
+    /**
+     * 身份认证上传
+     * @create_time: 2020/6/8 11:05:50
+     * @author: wcg
+     */
+    public function auth()
+    {
+        if (request()->isPost()) {
+            $list = input('post.');
+            $data['us_id_card'] = $list['idCard'];
+            $user_id = $this->user['id'];
+            $data['us_card_front_pic'] = base64_upload($list['front']);
+            $data['us_card_reverse_pic'] = base64_upload($list['reverse']);
+            $data['us_handheld_pic'] = base64_upload($list['handheld']);
+            $data['us_card_status'] = 1;
+            $data['us_realname'] = $list['realName'];
+            $validate = new Verify;
+            $result = $validate->scene('auth')->check($data);
+            if (!$result) {
+                $this->e_msg($validate->getError());
+            }
+
+            $info = model('User')->where('id', $user_id)->update($data);
+            if ($info) {
+                $this->s_msg('操作成功，等待后台审核');
+            } else {
+                $this->e_msg('操作失败');
+            }
+        } else {
+            $this->e_msg('请求类型错误');
+        }
+    }
+
+    /**
+     * 添加收款方式 支付宝/微信账号
+     * @create_time: 2020/6/8 15:35:45
+     * @author: wcg
+     */
+    public function bindAccount(){
+        $user_id = $this->user['id'];
+        if(request()->isGet()){
+            $this->s_msg('null',$this->user['us_realname']);
+        }elseif(request()->isPost()){
+            $type = input('type');
+            $account = input('account');
+
+            if($type == 'Ali'){
+                $info = model('User')->where('id',$user_id)->update(['ali_account'=>$account]);
+            }elseif($type == 'Wechat'){
+                $info = model('User')->where('id',$user_id)->update(['we_account'=>$account]);
+            }
+            if($info){
+                $this->s_msg('添加成功');
+            }else{
+                $this->e_msg('添加失败');
+            }
+        }
+    }
+
+    /**
+     * 删除收款方式
+     * @create_time: 2020/6/8 15:58:49
+     * @author: wcg
+     */
+    public function deleteAccount(){
+        $type = input('type');
+        $user_id = $this->user['id'];
+        if($type == 'Ali'){
+            $info = model('User')->where('id',$user_id)->update(['ali_account'=>'']);
+        }elseif($type == 'Wechat'){
+            $info = model('User')->where('id',$user_id)->update(['we_account'=>'']);
+        }
+        if($info){
+            $this->s_msg('删除成功');
+        }else{
+            $this->e_msg('删除失败');
+        }
+    }
+
+
 }
 

@@ -1,4 +1,4 @@
-<?php /*a:3:{s:72:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\user\check_list.html";i:1591341638;s:69:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_meta.html";i:1530329594;s:71:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_footer.html";i:1530790558;}*/ ?>
+<?php /*a:3:{s:72:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\user\check_list.html";i:1591345932;s:69:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_meta.html";i:1530329594;s:71:"D:\phpstudy_pro\WWW\uzf1\uzf\application\admin\view\public\_footer.html";i:1530790558;}*/ ?>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -32,23 +32,11 @@
 <script>DD_belatedPNG.fix('*');</script>
 <![endif]-->
 <title></title>
-<style type="text/css">
-    .inp {
-        width: 150px;
-        height: 25px;
-    }
-    .inp:focus {
-        outline:none;
-        border: 1px solid red;
-    }
-</style>
 </head>
 <body>
 <nav class="breadcrumb">
     <i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span>会员管理 <span class="c-gray en">&gt;</span> 认证审核
-    <!-- <a class="btn btn-success radius r" style="line-height:1.5em;margin-top:3px" href="javascript:void(0);" onclick="downdo()" title="下载" ><i class="Hui-iconfont">&#xe640;</i></a>&nbsp;&nbsp; -->
     <a class="btn btn-success radius r" style="line-height:1.5em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
-    <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px;margin-right:6px " onclick="excel()" title="导出"><i class="Hui-iconfont">&#xe644;</i></a>
 </nav>
 <div class="page-container">
     <div class="text-c">
@@ -81,7 +69,6 @@
                 <td><?php echo htmlentities($vo['us_id_card']); ?></td>
                 <td class="td-manage">
                     <a title="编辑" href="javascript:;" onclick="create(<?php echo htmlentities($vo['id']); ?>,'authDetail','认证详情')" class="ml-5" style="text-decoration:none">查看详情</a>
-                    <!--<a style="text-decoration:none" onclick="del(<?php echo htmlentities($vo['id']); ?>)" title="删除"><i class="Hui-iconfont">&#xe706;</i></a>-->
                 </td>
             </tr>
             <?php endforeach; endif; else: echo "" ;endif; ?>
@@ -116,22 +103,6 @@
         function create(id,url,key){
             var url = "<?php echo url('"+url+"'); ?>?id="+id;
             creatIframe(url,key);
-        }
-        function change(id,value,key){
-            layer.confirm('确定要更改么？', {
-                btn: ['确定', '取消']
-            }, function(index, layero){
-                $.ajax({
-                    type: "post",
-                    url: "<?php echo url('change'); ?>",
-                    data: {id:id,value:value,key:key},
-                    success: function(data) {
-                        if(data.code){
-                            location.href = '';
-                        }
-                    }
-                });
-            });
         }
     </script>
 </body>
