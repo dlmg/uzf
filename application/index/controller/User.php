@@ -18,9 +18,13 @@ class User extends Basis
         $this->s_msg(null, $data);
     }
 
+    /**
+     * 修改个人资料
+     * @create_time: 2020/6/8 17:09:59
+     * @author: wcg
+     */
     public function doedit()
     {
-
         $param = input('post.');
         $us_id = $this->user['id'];
         $pic = base64_upload($param['us_head_pic']);
@@ -57,6 +61,7 @@ class User extends Basis
         $this->s_msg(null, $code);
     }
 
+    //我的账户
     public function myAccount()
     {
         $user_id = $this->user['id'];
@@ -134,274 +139,6 @@ class User extends Basis
         $this->s_msg('null', $data);
     }
 
-
-    public function mybanks()
-    {
-        //$id = input('post.us_id');
-        $id = $this->user['id'];
-        $banks = model('Banks')->where('us_id', $id)->select();
-        if (count($banks) == 0) {
-            $this->e_msg('你没有银行卡');
-        }
-        $this->s_msg(null, $banks);
-    }
-
-    public function addbank()
-    {
-        $param = input('post.');
-        $validate = validate('Verify');
-        if (!$validate->scene('addBank')->check($param)) {
-            $this->e_msg($validate->getError());
-        }
-
-        $param['us_id'] = $this->user['id'];
-        if ($param['status'] == 1) {
-            $re = model('Banks')->where('us_id', $param['us_id'])->where('status', 1)->setDec('status');
-        }
-        $rel = model('Banks')->addInfo($param);
-        if ($rel) {
-            $this->s_msg('添加成功', $rel);
-        }
-    }
-
-    public function setDefaultBank()
-    {
-        $map['id'] = input('post.id');
-        $param['status'] = 1;
-        $addr_m = model('Banks');
-        $us_id = $addr_m->where($map)->value('us_id');
-        $addr_m->where('us_id', $us_id)->where('status', 1)->setDec('status');
-        $rel = $addr_m->updateInfo($map, $param);
-        if ($rel) {
-            $this->s_msg('设置成功');
-        } else {
-            $this->s_msg('您没有作出修改');
-        }
-    }
-
-    public function biToQuan()
-    {
-        $id = $this->user['id'];
-        $num = input('post.num');
-        $bi = $this->user['us_shop_bi'];
-        if ($bi < $num) {
-            $this->e_msg('现金积分不足');
-        }
-        $u_model = model('User');
-        $rel1 = $u_model->where('id', $id)->setInc('us_shop_quan', $num);
-        $rel2 = $u_model->where('id', $id)->setDec('us_shop_bi', $num);
-        $adds = [
-            'us_id' => $id,
-            'num' => $num,
-            'add_time' => date('Y-m-d H:i:s'),
-        ];
-        db('exchange')->insert($adds);
-        if ($rel1 && $rel2) {
-            $this->s_msg('转换成功', 1);
-        }
-        $this->e_msg('转换失败,请联系管理员');
-    }
-
-    public function stakeMoney()
-    {
-        $type = input('post.type');
-        if ($type == 0) {
-            $data['msg'] = '银行卡号';
-            $data['account'] = $this->user['bank_account'];
-            $data['type_pic'] = "/static/index/img/bank.png";
-        } elseif ($type == 1) {
-            $data['msg'] = '微信账号';
-            $data['account'] = $this->user['we_account'];
-            $data['type_pic'] = "/static/index/img/wechat.png";
-        } elseif ($type == 2) {
-            $data['msg'] = '支付宝账号';
-            $data['account'] = $this->user['ali_account'];
-            $data['type_pic'] = "/static/index/img/alipay.png";
-        }
-        $data['type'] = $type;
-        $data['us_shop_bi'] = $this->user['us_shop_bi'];
-        $this->s_msg(null, $data);
-    }
-
-    public function tixian()
-    {
-        $have = $this->user['us_all_get'];
-        $id = $this->user['id'];
-        $fee = cache('setting')['fee'];
-        $data['fee'] = $fee;
-        $data['id'] = $id;
-        $data['allmoney'] = $have;
-        $data['msg'] = '平台手续费率为' . $fee;
-        $this->s_msg(null, $data);
-
-    }
-
-    public function takeMoney()
-    {
-        $us_id = input('post.id');
-        $have = model('User')->where('id', $us_id)->value('us_all_get');
-        $fee = cache('setting')['fee'];
-
-        $type = input('post.type');
-        if ($type == 1) {
-            $data['msg'] = '银行卡号';
-            $rel = model('banks')->where('id', $us_id)->where('status', 1)->value('bank_account');
-
-            $da = model('User')->where('id', $us_id)->value('bank_account');
-
-            if (!$da || !$rel) {
-                $this->e_msg('请设置银行卡号');
-            }
-        } elseif ($type == 2) {
-            $data['msg'] = '微信账号';
-            $wexin = model('User')->where('id', $us_id)->value('we_account');
-            //$wexin = $this->user['we_account'];
-            if (!$wexin) {
-                $this->e_msg('请填写微信账号');
-            }
-            //$data['type_pic'] = "/static/index/img/wechat.png";
-        } elseif ($type == 0) {
-            $data['msg'] = '支付宝账号';
-            $zhifubao = model('User')->where('id', $us_id)->value('ali_account');
-            //$zhifubao  = $this->user['ali_account'];
-            if (!$zhifubao) {
-                $this->e_msg('请填写支付宝账号');
-            }
-        }
-        $param = input('post.');
-        if (!$param['type'] || !$param['tx_num']) {
-            $this->e_msg('请完善信息');
-        }
-        $lowest = cache('setting')['lowest'];
-
-        if ($param['tx_num'] < $lowest) {
-            $this->e_msg('提现金额不得小于' . $lowest);
-        }
-        if ($param['tx_num'] % 100 != 0) {
-            $this->e_msg('提现金额必须为100的整数倍');
-        }
-
-        $last_tixian = model('Tixian')->where('tx_status', 0)->where('us_id', $us_id)->count();
-
-        if ($last_tixian) {
-            $this->e_msg('上次提现尚未完成！');
-        }
-        $param['us_id'] = $us_id;
-        $param['tx_apply_time'] = date('Y-m-d H:i:s');
-
-        $us_model = model('User');
-
-        if ($param['code'] == 1) {
-            $need = $have;
-            $param['tx_num'] = $have * (1 - $fee);
-            unset($param['code']);
-        } else {
-            $need = $fee * $param['tx_num'] + $param['tx_num'];
-            if ($need > $have) {
-                $this->e_msg('可用余额不足');
-            }
-        }
-        $rell = $us_model->where('id', $us_id)->setDec('us_all_get', $need);
-        if (!$rell) {
-            $this->e_msg('扣除余额失败');
-        }
-
-        $rel = model("Tixian")->insertInfo($param);
-        if (!$rel) {
-            $this->e_msg('申请提现失败');
-        }
-        $this->s_msg('申请提现成功');
-
-
-    }
-
-    public function addAddr()
-    {
-        $param = input('post.');
-
-        $validate = validate('Verify');
-        if (!$validate->scene('addAddr')->check($param)) {
-            $this->e_msg($validate->getError());
-        }
-        $param['us_id'] = $this->user['id'];
-        $param['add_time'] = date('Y-m-d H:i:s');
-        //$param['addr_code'] = implode(',', $param['addr_code']);
-        $default = model('UserAddr')->where('us_id', $this->user['id'])->where('addr_default', 1)->find();
-        if (!$default) {
-            $param['addr_default'] = 1;
-        }
-        $rel = model('UserAddr')->addInfo($param);
-        if ($rel) {
-            $this->s_msg('添加成功', $rel);
-        }
-    }
-
-    public function myAddr()
-    {
-        $id = $this->user['id'];
-        $info = model('UserAddr')->where('us_id', $id)->select();
-        foreach ($info as $key => $value) {
-            $info[$key]['addr_addr'] = $value['province'] . $value['city'] . $value['area'] . $value['addr_detail'];
-        }
-        $this->s_msg(null, $info);
-    }
-
-    public function setDefaultAddr()
-    {
-        $map['id'] = input('post.id');
-        $param['addr_default'] = 1;
-
-        $addr_m = model('UserAddr');
-        $us_id = $addr_m->where($map)->value('us_id');
-        $addr_m->where('us_id', $us_id)->where('addr_default', 1)->setDec('addr_default');
-        $rel = $addr_m->updateInfo($map, $param);
-        if ($rel) {
-            $this->s_msg('设置成功');
-        } else {
-            $this->s_msg('您没有作出修改');
-        }
-    }
-
-    public function addrDetail()
-    {
-        $id = input('post.id');
-        $info = model('UserAddr')->where('id', $id)->find();
-        $info['addr_code'] = explode(',', $info['addr_code']);
-
-        $this->s_msg(null, $info);
-    }
-
-    public function delAddr()
-    {
-        $id = input('post.id');
-        $code = model('UserAddr')->where('id', $id)->value('addr_default');
-        if ($code == 1) {
-            $this->e_msg('默认地址不能被删除');
-        }
-        $rel = model('UserAddr')->destroy($id);
-        if ($rel) {
-            $this->s_msg('删除成功');
-        }
-        $this->e_msg('请联系网站管理员');
-    }
-
-    public function editAddr()
-    {
-        $param = input('post.');
-
-        $validate = validate('Verify');
-        if (!$validate->scene('addAddr')->check($param)) {
-            $this->error($validate->getError());
-        }
-        $map['id'] = $param['id'];
-
-        $rel = model('UserAddr')->updateInfo($map, $param);
-        if ($rel) {
-            $this->s_msg('修改成功');
-        } else {
-            $this->s_msg('您没有作出修改');
-        }
-    }
 
     /**
      * 我的团队
@@ -645,11 +382,13 @@ class User extends Basis
         }elseif(request()->isPost()){
             $type = input('type');
             $account = input('account');
-
+            $bankName = input('bankName');
             if($type == 'Ali'){
                 $info = model('User')->where('id',$user_id)->update(['ali_account'=>$account]);
             }elseif($type == 'Wechat'){
                 $info = model('User')->where('id',$user_id)->update(['we_account'=>$account]);
+            }elseif($type == 'bankCard'){
+                $info = model('User')->where('id',$user_id)->update(['bank_account'=>$account,'bank_branch_name'=>$bankName]);
             }
             if($info){
                 $this->s_msg('添加成功');
@@ -678,7 +417,6 @@ class User extends Basis
             $this->e_msg('删除失败');
         }
     }
-
 
 }
 

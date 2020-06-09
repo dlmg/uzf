@@ -147,7 +147,6 @@ class Store extends Basis
         $data = input('post.');
         $path = base64_upload($data['base_64']);
         $data['pd_pic'] = $path;
-        $product = new ProductLogic;
         $result = $product->saveProduct($data, 1);
         $this->s_msg('null', $result);
     }

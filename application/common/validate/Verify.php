@@ -158,7 +158,7 @@ class Verify extends Validate
         'addAreastore' => ['us_tel', 'area_name','ad_tel'], //添加区域
         'editUser' => ['us_nickname','us_tel'], //修改用户
         'selfeditUser' => ['us_nickname'], //修改用户
-        'forgetUser' => ['us_tel', 'us_pwd'], //忘记密码
+        'forgetUser' => ['us_tel', 'new','con'], //忘记密码
         'addStore' => ['us_tel', 'ad_tel', 'st_tel', 'st_name', 'area_id', 'st_logo','province','city','town','st_addr_detail' ], //添加门店
         'editStore' => ['st_name', 'st_logo', 'st_pic', 'st_tel', 'st_label'], //修改门店
         'addCate' => ['ca_name','ca_pic'], //添加分类

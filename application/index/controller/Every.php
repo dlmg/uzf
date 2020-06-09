@@ -141,23 +141,17 @@ class Every extends Common
         if (is_post()) {
             $data = input('post.');
             $info = model('User')->detail(['us_tel' => $data['us_tel']], 'id');
-            $code_info = cache($data['us_tel'] . 'code') ?: "";
-            if (!$code_info) {
-                $this->e_msg('请重新发送验证码');
-            } elseif (trim($data['code']) != $code_info) {
-                $this->e_msg('验证码不正确');
-            }
-            unset($data['code']);
+
             $validate = validate('Verify');
             if (!$validate->scene('forgetUser')->check($data)) {
                 $this->e_msg($validate->getError());
             }
-            $data['us_pwd'] = md5($data['us_pwd']);
-            $rel = model('User')->editInfo($data, ['id' => $info['id']]);
+            $data['us_pwd'] = md5($data['new']);
+            $rel = model('User')->editInfo($data,['id'=>$info['id']]);
             if ($rel) {
-                $this->result('1', 1, '修改成功', 'json');
+                $this->result('200', 1, '修改成功', 'json');
             } else {
-                $this->result('1', 2, '修改失败,可能您的密码没有做出修改', 'json');
+                $this->result('403', 2, '修改失败,可能您的密码没有做出修改', 'json');
             }
         }
     }
