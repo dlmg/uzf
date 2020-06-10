@@ -65,7 +65,7 @@ class VoteLogic
     }*/
 
     //获取user_id对应的姓名
-    public function getName($id){
+    public static function getName($id){
         $data = Db::name('election')->where('v_id', $id)->field('')->select();
         foreach($data as $k => $v){
             $data[$k]['nickname'] = Db::name('user')->where('id',$v['user_id'])->value('us_nickname');

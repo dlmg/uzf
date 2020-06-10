@@ -78,10 +78,10 @@ class ToolsLogic
     {
         Db::startTrans();
         try {
-            Db::name('money')->where('user_id', $data['user_id'])->setDec('money', $data['price']);
+            Db::name('money')->where('user_id', $data['user_id'])->where('coin_id',2)->setDec('money', $data['price']);
             $data['add_time'] = date('Y-m-d H:i:s');
             Db::name('tools_order')->strict(false)->insert($data);
-            Db::name('wallet')->data(['us_id'=>$data['user_id'],'wa_num'=>$data['price'],'wa_type'=>1,'wa_note'=>'购买道具卡','add_time'=>date('Y-m-d H:i:s')])->insert();
+            Db::name('wallet')->data(['us_id'=>$data['user_id'],'wa_num'=>$data['price'],'wa_type'=>2,'wa_note'=>'购买道具','add_time'=>date('Y-m-d H:i:s')])->insert();
             $back = Db::name('backpack')->where('user_id', $data['user_id'])->where('tools_id', $data['tools_id'])->find();
             if (empty($back)) {
                 Db::name('backpack')->strict(false)->insert($data);

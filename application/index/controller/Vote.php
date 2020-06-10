@@ -63,7 +63,7 @@ class Vote extends Basis
         //如果投票类型为消耗uzf的，
         if ($time['type'] == 1) {
             $need = 1;
-            $data = Db::name('money')->where('user_id', $us_id)->find();
+            $data = Db::name('money')->where('user_id', $us_id)->where('coin_id',2)->find();
             if ($now < $time['add_time'])
                 return $this->e_msg('投票还未开始');
             elseif ($now > $time['end_time'])
@@ -75,6 +75,7 @@ class Vote extends Basis
                 //扣除投票人的余额加到其冻结余额
                 Db::name('money')
                     ->where('user_id', $us_id)
+                    ->where('coin_id',2)
                     ->data([
                         'money' => $data['money'] - $need,
                         'lock_money' => $data['lock_money'] + $need
@@ -149,6 +150,9 @@ class Vote extends Basis
         $start = input('start');
         $end = input('end');
         $type = input('type');
+        if($this->user['us_type'] != 3 && $this->user['us_type'] != 4){
+            $this->e_msg('你没有权限发起投票');
+        }
         if ($type == 1)
             $need = input('need');
         else
@@ -223,19 +227,5 @@ class Vote extends Basis
             return $this->s_msg(null, $data);
         }
     }
-
-    //测试函数
-    /*public function test()
-    {
-        echo THINK_VERSION;
-        $list = model('Config')->getInfo();
-        dump($list);
-
-        // dump(cache('setting'));
-        //获取当前访问的模块、控制器、方法
-        dump(request()->controller());
-        dump(request()->module());
-        dump(request()->action());
-    }*/
 }
 

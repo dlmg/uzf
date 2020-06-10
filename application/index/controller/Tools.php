@@ -15,7 +15,7 @@ use think\Db;
  * 道具商城类
  * @package app\index\controller
  * @create_time 2020/4/16 17:20:20
- * @Author MG <dlmg521@163.com>
+ * @Author wcg
  */
 class Tools extends Basis
 {
@@ -25,7 +25,11 @@ class Tools extends Basis
         parent::__construct();
     }
 
-    //道具商城列表
+    /**
+     * 道具商城列表
+     * @create_time: 2020/4/16 17:40:39
+     * @Author: wcg
+     */
     public function index()
     {
         $tools = new ToolsLogic;
@@ -33,7 +37,7 @@ class Tools extends Basis
             $this->map[] = ['name', 'like', '%' . input('keywords') . '%'];
         }
         $list = $tools->getList($this->map, $this->order, $this->size);
-        if (empty($list)) {
+        if ($list->isEmpty()) {
             return $this->e_msg('暂无道具列表');
         }
         return $this->s_msg(null, $list);
@@ -42,7 +46,7 @@ class Tools extends Basis
     /**
      * 购买道具处理
      * @create_time: 2020/4/16 17:40:39
-     * @Author: MG
+     * @Author: wcg
      */
     public function buy()
     {
@@ -60,7 +64,7 @@ class Tools extends Basis
             'price' => $price,
         ];
 
-        $money = Db::name('money')->where('user_id', $user_id)->find();
+        $money = Db::name('money')->where('user_id', $user_id)->where('coin_id',2)->find();
         if ($price > $money['money']) {
             return $this->e_msg('您的余额不足，请充值后购买');
         }
@@ -77,6 +81,9 @@ class Tools extends Basis
      */
     public function add()
     {
+        if($this->user['us_type'] != 3 && $this->user['us_type'] != 4){
+            $this->e_msg('你没有权限访问',403);
+        }
         $data = input('post.');
         $path = base64_upload($data['url']);
 
@@ -115,18 +122,18 @@ class Tools extends Basis
      */
     public function backPack()
     {
-        $product_id = input('product_id');
         //获取升级还是降级
-        $tools_name = input('tools_name');
         $user_id = $this->user['id'];
-        if ($tools_name == 'up') {
-            $result = Db::name('backpack')->alias('a')->join('tools b', 'b.id=a.tools_id')->where('a.user_id', $user_id)->where('b.category', 1)->select();
-            return $this->s_msg(null, $result);
+        $result = Db::name('backpack')->alias('a')->join('tools b', 'b.id=a.tools_id')->where('a.user_id', $user_id)->paginate(10);
+        /*if ($tools_name == 'up') {
+            $result = Db::name('backpack')->alias('a')->join('tools b', 'b.id=a.tools_id')->where('a.user_id', $user_id)->where('b.category', 1)->paginate();
         } elseif ($tools_name == 'down') {
-            $result = Db::name('backpack')->alias('a')->join('tools b', 'b.id=a.tools_id')->where('a.user_id', $user_id)->where('b.category', 2)->select();
-            return $this->s_msg(null, $result);
+            $result = Db::name('backpack')->alias('a')->join('tools b', 'b.id=a.tools_id')->where('a.user_id', $user_id)->where('b.category', 2)->paginate();
+        }*/
+        if($result->isEmpty()){
+            $this->s_msg('暂无道具');
         }
-        return $this->e_msg('出错');
+        $this->s_msg('null',$result);
     }
 
     /**
@@ -139,7 +146,6 @@ class Tools extends Basis
      */
     public function consume()
     {
-
         $tools_id = input('tools_id'); //得到道具id
         $product_id = input('product_id'); //得到商品(服务)id
         $user_id = $this->user['id'];

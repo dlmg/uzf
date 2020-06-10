@@ -4,10 +4,8 @@ namespace app\index\controller;
 
 use think\facade\Config;
 use app\common\logic\UserLogic;
-use app\index\controller\Wecpay;
 use think\Container;
-use think\Db;
-use app\common\logic\ProductLogic;
+
 
 /**
  * 图片验证码
@@ -38,9 +36,8 @@ class Every extends Common
         return intval($calculatedDistance * 1000) . '米';
     }
 
-    public function test1($base64)
+    public function test1()
     {
-
     }
 
     /**
