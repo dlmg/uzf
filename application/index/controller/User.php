@@ -92,6 +92,7 @@ class User extends Basis
         $map['user_id'] = $this->user['id'];
         $param['user_id'] = $this->user['id'];
         $param['us_path'] = $this->user['us_path'];
+        $param['picture'] = base64_upload($param['picture']);
         $info = model('apply')->where($map)->find();
         if ($info) {
             $this->e_msg('您的申请已在审批中，请勿重复提交');
@@ -136,6 +137,9 @@ class User extends Basis
             $this->e_msg('参数错误');
         }
         $data = Db::name('user')->where('us_type', 1)->where('us_level', $level)->order('us_recommend', 'desc')->order('us_add_time', 'desc')->field('us_head_pic,us_nickname,us_recommend')->select();
+        if(count($data) == 0){
+            $this->e_msg('暂无榜单');
+        }
         $this->s_msg('null', $data);
     }
 
@@ -262,6 +266,9 @@ class User extends Basis
                 $map = [['st_status', '=', '2'], ['', 'exp', Db::raw("find_in_set($us_id,us_path)")]];
             }
             $result = model('Product')->where($map)->order($this->order)->field('id,pd_name,pd_price,pd_pic,ca_id')->paginate($this->size, false, $config = ['query' => request()->param()]);
+            if($result->isEmpty()){
+                $this->e_msg('暂无待审批');
+            }
             foreach ($result as $k => $v) {
                 $v['category'] = $v['Category'];
             }
@@ -324,11 +331,28 @@ class User extends Basis
     {
         $tag = input('tag');
         $id = input('id');
-
+        $result = Db::name('apply')->where('id',$id)->find();
         if ($tag == 'merchant') {
             $date = date('Y-m-d H:i:s');
-            model('Apply')->where('id', $id)->update(['setting_time' => $date, 'status' => $this->user['us_type'] - 1]);
-            unset($data);
+            if($this->user['us_type'] == 3){
+                model('Apply')->where('id', $id)->update(['setting_time' => $date, 'status' => $this->user['us_type'] - 1]);
+            }elseif($this->user['us_type'] == 4){
+                model('Apply')->where('id', $id)->update(['apply_time' => $date, 'status' => $this->user['us_type'] - 1]);
+            }
+            if($this->user['us_type'] == 4){
+                $data = [
+                    'us_apply_tel' => $result['telephone'],
+                    'us_apply_addr' => $result['address'],
+                    'us_vip_time' => $date,
+                    'us_apply_time' => $result['start_time'],
+                    'ca_id' => $result['merchant_style'],
+                    'us_apply_shopname' => $result['merchant_name'],
+                    'us_apply_shop_pic' => $result['picture'],
+                    'merchant_status' => 2,
+                    'us_type' => 2
+                ];
+                Db::name('user')->where('id',$result['user_id'])->update($data);
+            }
             $this->s_msg('操作成功');
         } elseif ($tag == 'product') {
             model('Product')->where('id', $id)->update(['st_status' => $this->user['us_type'] - 1]);

@@ -35,6 +35,8 @@ class Order extends Basis
             if (input('keywords')) {
                 $keywords = input('keywords');
                 $map[] = ['b.pd_name', 'LIKE', '%' . $keywords . '%'];
+            }else{
+                $map[] = ['1','=','1'];
             }
 
             $subQuery = Db::table('uzf_bidding')
@@ -86,9 +88,6 @@ class Order extends Basis
         } elseif ($tag == 'used') {
             $result = model('Order')->where('us_id', $us_id)->where('or_status', 1)->paginate($this->size, false, $config = ['query' => request()->param()]);
         } elseif ($tag == 'out') {
-            //已出局订单
-            /*$sql = "select * from (select a.*,b.pd_status,b.pd_sales from (select * from  uzf_bidding where user_id=$us_id order by status desc,add_time desc limit 9999) a join uzf_product b on a.pd_id=b.id GROUP BY a.pd_id,a.sales) r where (r.status=0 and r.sales<=r.pd_sales) or (r.sales>r.pd_sales and r.pd_status=3)";
-            $result = Db::query($sql);*/
             $subQuery = Db::table('uzf_bidding')
                 ->where('user_id', $us_id)
                 ->order('status', 'desc')
@@ -202,6 +201,9 @@ class Order extends Basis
     public function transferList(){
         $us_id = $this->user['id'];
         $result = Db::name('transfer')->where("(from_uid = $us_id and id=1) or to_uid = $us_id")->paginate(10);
+        if($result->isEmpty()){
+            $this->e_msg('暂无转让记录');
+        }
         $this->s_msg('null',$result);
     }
     public function bandAddr()

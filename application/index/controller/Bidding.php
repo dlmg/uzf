@@ -36,6 +36,9 @@ class Bidding extends Basis
         if (!$validate->scene('addBid')->check($param)) {
             $this->e_msg($validate->getError());
         }
+        if($this->user['us_pw2'] == null){
+            $this->e_msg('请先设置支付密码');
+        }
         if ($this->user['us_pw2'] != md5($param['us_pw2'])){
             $this->e_msg('支付密码错误');
         }

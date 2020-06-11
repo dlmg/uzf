@@ -38,6 +38,9 @@ class Every extends Common
 
     public function test1()
     {
+        $data = input('post.');
+
+        halt($data);
     }
 
     /**
