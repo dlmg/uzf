@@ -23,7 +23,8 @@
         "zircote/swagger-php": "^2.0",
         "overtrue/wechat": "~4.0",
         "yansongda/pay": "^2.4",
-        "phpoffice/phpexcel": "^1.8"
+        "phpoffice/phpexcel": "^1.8",
+        "sc0vu/web3.php": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -39,7 +40,7 @@
     "repositories": {
         "packagist": {
             "type": "composer",
-            "url": "https://packagist.laravel-china.org"
+            "url": "https://mirrors.aliyun.com/composer/"
         }
     }
 }

@@ -7,6 +7,7 @@
 
 namespace app\index\controller;
 
+use think\Controller;
 use think\Db;
 
 /**
@@ -73,7 +74,7 @@ class Exchange extends Basis
             $data['payment'] = implode(',', $data['payment']);
             $data['add_time'] = date('Y-m-d H:i:s');
 
-            if ($data['coin_id'] != 1 && $data['coin_name'] != 2) {
+            if ($data['coin_id'] != 1 && $data['coin_id'] != 2) {
                 $this->e_msg('参数传递错误');
             }
 
@@ -153,13 +154,16 @@ class Exchange extends Basis
     {
         $id = input('id');
         $data = Db::name('Publish')->where('id', $id)->find();
-        $data['volume'] = sprintf("%.8f", Db::name('ex_order')->where('pu_id', $id)->sum('amount'));
+        // $data['volume'] = sprintf("%.8f", Db::name('ex_order')->where('pu_id', $id)->sum('amount'));
         $this->s_msg('null', $data);
     }
 
     /**
      * 我要买下单处理逻辑
-     * @return string
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
      * @create_time: 2020/5/30 14:32:09
      * @author: wcg
      */
@@ -169,36 +173,36 @@ class Exchange extends Basis
         $data['from_id'] = input('user_id');
         $data['to_id'] = $this->user['id'];
         $data['number'] = input('buy_num');
-        $data['amount'] = input('buy_price');
+        $data['price'] = input('buy_price');
         $data['add_time'] = date('Y-m-d H:i:s');
         $data['coin_id'] = input('coin_id');
         $data['or_num'] = date('YmdHis') . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
         $data['reference'] = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
         Db::startTrans();
-        try {
-            $info = Db::name('publish')
+        $info = Db::name('publish')->where('id', $data['pu_id'])->lock(true)->find();
+        if ($info['number'] < $data['number']) {
+            Db::rollback();
+            $this->e_msg('超过了可购买数量' . $info['number']);
+        } else {
+            Db::name('publish')
                 ->where('id', $data['pu_id'])
                 ->setDec('number', $data['number']);
 
             $result = Db::name('ex_order')
                 ->field('status', true)
                 ->insertGetId($data);
-        } catch (\Exception $e) {
-            Db::rollback();
-            return $e->getMessage();
-        }
-
-        if ($result && $info) {
             Db::commit();
             $this->s_msg('下单成功', $result);
-        } else {
-            $this->e_msg('下单失败');
         }
     }
 
     /**
      * 我要卖下单处理逻辑
-     * @return string
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * @throws \think\exception\PDOException
      * @create_time: 2020/5/30 15:52:07
      * @author: wcg
      */
@@ -208,12 +212,12 @@ class Exchange extends Basis
         $data['from_id'] = $this->user['id'];
         $data['to_id'] = input('user_id');
         $data['number'] = input('buy_num');
-        $data['amount'] = input('buy_price');
+        $data['price'] = input('buy_price');
         $data['add_time'] = date('Y-m-d H:i:s');
         $data['coin_id'] = input('coin_id');
         $data['or_num'] = date('YmdHis') . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
         $data['reference'] = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
-        $coin_name = Db::name('coin')->where('id',$data['coin_id'])->value('name');
+        $coin_name = Db::name('coin')->where('id', $data['coin_id'])->value('name');
 
         $number = $data['number'];
         $money = Db::name('money')
@@ -224,8 +228,12 @@ class Exchange extends Basis
             $this->e_msg('你的' . $coin_name . '数量不足');
         }
         Db::startTrans();
-        try {
-            $info = Db::name('publish')
+        $info = Db::name('publish')->where('id', $data['pu_id'])->lock(true)->find();
+        if ($info['number'] < $data['number']) {
+            Db::rollback();
+            $this->e_msg('超过了可卖出数量' . $info['number']);
+        } else {
+            Db::name('publish')
                 ->where('id', $data['pu_id'])
                 ->setDec('number', $data['number']);
 
@@ -240,22 +248,13 @@ class Exchange extends Basis
             $result = Db::name('ex_order')
                 ->field('status', true)
                 ->insertGetId($data);
-
-        } catch (\Exception $e) {
-            Db::rollback();
-            return $e->getMessage();
-        }
-
-        if ($result && $info) {
             Db::commit();
             $this->s_msg('下单成功', $result);
-        } else {
-            $this->e_msg('下单失败');
         }
     }
 
     /**
-     * 取消我要买的订单
+     * 取消订单
      * @throws \think\Exception
      * @create_time: 2020/5/30 16:09:03
      * @author: wcg
@@ -263,25 +262,35 @@ class Exchange extends Basis
     public function cancleOrder()
     {
         $id = input('id');
-        $data = Db::name('ex_order')->where('id',$id)->find();
-        $tag = Db::name('publish')->where('id',$data['pu_id'])->value('tag');
+        $data = Db::name('ex_order')->where('id', $id)->find();
+        if ($data['status'] == 2) {
+            $this->e_msg('订单已取消');
+        }
+        $tag = Db::name('publish')->where('id', $data['pu_id'])->value('tag');
         $number = $data['number'];
         Db::startTrans();
-        try{
-            Db::name('ex_order')->where('id', $id)->setField('status', 2);            //修改订单状态为已取消
-            Db::name('publish')->where('id', $data['pu_id'])->setInc('number', $data['number']);      //把所属挂单的数量恢复
-            if($tag == 2){
-                Db::name('money')->where('user_id',$data['from_id'])->where('coin_id',$data['coin_id'])->update(['lock_money'=>"lock_money-$number",'money'=>"money+$number"]);
+        try {
+            Db::name('ex_order')
+                ->where('id', $id)
+                ->setField('status', 2);        //修改订单状态为已取消
+
+            Db::name('publish')
+                ->where('id', $data['pu_id'])
+                ->setInc('number', $data['number']);      //把所属挂单的数量恢复
+
+            if ($tag == 2) {
+                Db::name('money')
+                    ->where('user_id', $data['from_id'])
+                    ->where('coin_id', $data['coin_id'])
+                    ->dec('lock_money', $number)
+                    ->inc('money', $number)
+                    ->update();
             }
-            Db::commit();
-            return $this->s_msg(null,'取消成功');
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             Db::rollback();
-            return $this->e_msg($e->getMessage());
+            $this->e_msg($e->getMessage());
         }
-
-
-
+        Db::commit();
         $this->s_msg('取消成功');
     }
 
@@ -296,9 +305,9 @@ class Exchange extends Basis
         $user_id = $this->user['id'];
         if (input('get.type')) {
             $type = input('get.type');
-            if($type == 'sell'){
+            if ($type == 'sell') {
                 $map['from_id'] = $user_id;
-            }elseif($type == 'buy'){
+            } elseif ($type == 'buy') {
                 $map['to_id'] = $user_id;
             }
         }
@@ -306,7 +315,7 @@ class Exchange extends Basis
             $status = input('get.status');
             $map['status'] = $status;
         }
-        $map['from_id|to_id'] = ['=',$user_id];
+        $map['from_id|to_id'] = ['=', $user_id];
         $data = Db::name('ex_order')
             ->where($map)
             ->paginate(10)
@@ -334,6 +343,10 @@ class Exchange extends Basis
     public function paid()
     {
         $id = input('id');
+        $add_time = strtotime(Db::name('ex_order')->where('id', $id)->value('add_time'));
+        if ($add_time + 1800 < time()) {
+            $this->e_msg('订单已超时');
+        }
         Db::name('ex_order')->where('id', $id)->setField('status', 3);
         $this->s_msg('操作成功');
     }
@@ -346,8 +359,21 @@ class Exchange extends Basis
     public function arrive()
     {
         $id = input('id');
+        $data = Db::name('ex_order')->where('id', $id)->find();
+        if($data['status'] != 3){
+            $this->e_msg('等待买家付款');
+        }
         Db::name('ex_order')->where('id', $id)->setField('status', 4);
-        $this->s_msg('操作成功');
+        Db::startTrans();
+        $info = Db::name('money')->where('user_id', $data['from_id'])->where('coin_id',$data['coin_id'])->setDec('lock_money', $data['number']);
+        $info1 = Db::name('money')->where('user_id', $data['to_id'])->where('coin_id',$data['coin_id'])->setInc('money', $data['number']);
+        if ($info && $info1) {
+            Db::commit();
+            $this->s_msg('操作成功');
+        } else {
+            Db::rollback();
+            $this->e_msg('操作失败');
+        }
     }
 
 }

@@ -153,7 +153,7 @@ class Tools extends Basis
         $tools = Db::name('tools')->where('id', $tools_id)->find();
         $number = Db::name('backpack')->where('user_id', $user_id)->where('tools_id', $tools_id)->value('number');
         if ($number < 1) {
-            return $this->e_msg('暂无此道具');
+            $this->e_msg('暂无此道具');
         }
         Db::startTrans();
         try {
@@ -173,8 +173,8 @@ class Tools extends Basis
             Db::commit();
         } catch (\Exception $e) {
             Db::rollback();
-            return $this->e_msg($e->getMessage());
+            $this->e_msg($e->getMessage());
         }
-        return $this->s_msg(null, '使用成功');
+        $this->s_msg(null, '使用成功');
     }
 }

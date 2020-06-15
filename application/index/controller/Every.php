@@ -6,7 +6,6 @@ use think\facade\Config;
 use app\common\logic\UserLogic;
 use think\Container;
 
-
 /**
  * 图片验证码
  */
@@ -38,9 +37,6 @@ class Every extends Common
 
     public function test1()
     {
-        $data = input('post.');
-
-        halt($data);
     }
 
     /**

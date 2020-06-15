@@ -63,19 +63,19 @@ class Vote extends Basis
         //如果投票类型为消耗uzf的，
         if ($time['type'] == 1) {
             $need = 1;
-            $data = Db::name('money')->where('user_id', $us_id)->where('coin_id',2)->find();
+            $data = Db::name('money')->where('user_id', $us_id)->where('coin_id', 2)->find();
             if ($now < $time['add_time'])
-                return $this->e_msg('投票还未开始');
+                $this->e_msg('投票还未开始');
             elseif ($now > $time['end_time'])
-                return $this->e_msg('投票已经结束');
+                $this->e_msg('投票已经结束');
             if ($data['money'] < $need)
-                return $this->e_msg('余额不足，不能参与投票');
+                $this->e_msg('余额不足，不能参与投票');
 
             try {
                 //扣除投票人的余额加到其冻结余额
                 Db::name('money')
                     ->where('user_id', $us_id)
-                    ->where('coin_id',2)
+                    ->where('coin_id', 2)
                     ->data([
                         'money' => $data['money'] - $need,
                         'lock_money' => $data['lock_money'] + $need
@@ -91,9 +91,9 @@ class Vote extends Basis
                 Db::commit();
             } catch (\Exception $e) {
                 Db::rollback();
-                return $this->e_msg('投票失败', $e->getMessage());
+                $this->e_msg('投票失败', $e->getMessage());
             }
-            return $this->s_msg('投票成功', 1);
+            $this->s_msg('投票成功', 1);
         } elseif ($time['type'] == 2) {
             //接受前台传过来的参数：反对还是赞成  1是赞成  -1是反对
             $value = input('value');
@@ -106,32 +106,32 @@ class Vote extends Basis
                     //投的若是反对，则把need+1，即反对票数加1
                     Db::name('vote')->where('id', $vote_id)->setInc('need', 1);
                 } else {
-                    return $this->e_msg('参数类型错误');
+                    $this->e_msg('参数类型错误');
                 }
                 Db::name('vote')->where('id', $vote_id)->setInc('person_num', 1);
                 Db::name('voting')->data($insertData)->insert();
                 Db::commit();
-                return $this->s_msg('投票成功');
+                $this->s_msg('投票成功');
             } else {
-                return $this->e_msg('您已经参与此次投票');
+                $this->e_msg('您已经参与此次投票');
             }
         } elseif ($time['type'] == 3) {
             //获取到所选系统服务商id
             $id = input('provider_id');
             if (empty($id)) {
-                return $this->e_msg('请求参数错误！');
+                $this->e_msg('请求参数错误！');
             }
             if (empty($result)) {
                 Db::name('voting')->insert($insertData);
                 Db::name('vote')->where('id', $vote_id)->setInc('person_num', 1);
                 Db::name('election')->where('v_id', $vote_id)->where('user_id', $id)->setInc('votes', 1);
                 Db::commit();
-                return $this->s_msg('投票成功');
+                $this->s_msg('投票成功');
             } else {
-                return $this->e_msg('您已参与投票');
+                $this->e_msg('您已参与投票');
             }
         } else {
-            return $this->e_msg('请求参数错误');
+            $this->e_msg('请求参数错误');
         }
     }
 
@@ -150,7 +150,7 @@ class Vote extends Basis
         $start = input('start');
         $end = input('end');
         $type = input('type');
-        if($this->user['us_type'] != 3 && $this->user['us_type'] != 4){
+        if ($this->user['us_type'] != 3 && $this->user['us_type'] != 4) {
             $this->e_msg('你没有权限发起投票');
         }
         if ($type == 1)
@@ -162,14 +162,14 @@ class Vote extends Basis
             if (!empty(input('levels'))) {
                 $levels = implode(',', input('levels'));
             } else {
-                return $this->e_msg('参与范围必选');
+                $this->e_msg('参与范围必选');
             }
         } else {
             //查询有无正在审批的商品和商家
             $apply = Db::name('apply')->where('status', 'in', '1,2')->find();
             $product = Db::name('product')->where('st_status', 1)->find();
             if (!empty($apply) || !empty($product)) {
-                return $this->e_msg('当前有正在审核的申请，无法发起选举');
+                $this->e_msg('当前有正在审核的申请，无法发起选举');
             }
             $levels = 3;
         }
@@ -185,7 +185,7 @@ class Vote extends Basis
         $validate = new Verify;
         $result = $validate->scene('vote')->check($data);
         if (!$result) {
-            return $this->e_msg($validate->getError());
+            $this->e_msg($validate->getError());
         }
 
         $vote_id = Db::name('vote')->insertGetId($data);
@@ -201,7 +201,7 @@ class Vote extends Basis
             }
         }
         Site::isEnd();
-        return $this->s_msg('添加成功');
+        $this->s_msg('添加成功');
     }
 
     /**
@@ -217,14 +217,14 @@ class Vote extends Basis
         $v_id = input('id');
         $data = Db::name('vote')->where('id', $v_id)->field('user_levels,status', true)->find();
         if (!$data) {
-            return $this->e_msg('出错了');
+            $this->e_msg('出错了');
         }
         if ($data['type'] == 3) {
             $result['vote'] = $data;
             $result['provider'] = VoteLogic::getName($v_id);
-            return $this->s_msg(null, $result);
+            $this->s_msg(null, $result);
         } else {
-            return $this->s_msg(null, $data);
+            $this->s_msg(null, $data);
         }
     }
 }
